@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>ChatGPT - Fixture</title>
+</head>
+<body>
+  <header>
+    <a href="/" data-testid="create-new-chat-button" aria-label="Novo chat">Novo chat</a>
+    <button data-testid="model-switcher-dropdown-button">ChatGPT 4o</button>
+  </header>
+  <main>
+    <article>
+      <div data-message-author-role="assistant">
+        <details data-testid="reasoning-panel" class="result-thinking">Pensamento interno o1/o3 que nao deve aparecer no texto final extraido.</details>
+        <div class="markdown prose">
+          <p>O envio delta por hash SHA-256 reduz drasticamente o consumo de contexto em sessoes multi-turn.</p>
+          <a data-testid="webpage-citation" class="citation-pill" href="https://platform.openai.com/docs/guides/prompt-engineering" target="_blank">Guia de Prompt Engineering</a>
+        </div>
+      </div>
+    </article>
+  </main>
+  <footer>
+    <input id="file-upload" type="file" multiple style="display:none" />
+    <div id="prompt-textarea" class="ProseMirror" contenteditable="true" role="textbox" aria-label="Envie uma mensagem"></div>
+    <button type="button" data-testid="send-button" aria-label="Enviar prompt">Enviar</button>
+    <button type="button" data-testid="stop-button" aria-label="Parar geracao" style="display:none">Parar</button>
+  </footer>
+</body>
+</html>

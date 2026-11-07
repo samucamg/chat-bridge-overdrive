@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Sessao Expirada - Login Necessario</title>
+</head>
+<body>
+  <main>
+    <div class="auth-container">
+      <h2>Sessao Expirada</h2>
+      <p>Sua sessao expirou por inatividade. Efetue login novamente para continuar.</p>
+      <form action="/auth/login" method="post">
+        <input type="text" name="username" placeholder="Usuario ou Email" />
+        <input type="password" name="password" placeholder="Senha" />
+        <button data-testid="login-button" type="submit">Sign in / Fazer login</button>
+      </form>
+      <a href="/auth/login" class="login-link">Fazer login com outra conta</a>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Claude - Fixture</title>
+</head>
+<body>
+  <header>
+    <a href="/new" aria-label="Nova conversa">Nova conversa</a>
+    <button data-testid="model-selector-dropdown">Claude 3.7 Sonnet</button>
+  </header>
+  <main>
+    <article>
+      <div class="font-claude-message">
+        <div class="thinking-block" data-testid="thinking-block">Pensamento estendido do Claude que deve ser filtrado.</div>
+        <p>O servidor MCP opera via stdio sem expor portas de rede locais.</p>
+        <a href="https://docs.anthropic.com/en/docs/agents-and-tools/mcp" target="_blank">Documentacao MCP Anthropic</a>
+      </div>
+    </article>
+  </main>
+  <footer>
+    <input type="file" data-testid="file-upload" style="display:none" />
+    <fieldset>
+      <div class="ProseMirror" contenteditable="true" role="textbox" aria-label="Escreva para o Claude"></div>
+      <button type="button" data-testid="send-button" aria-label="Enviar mensagem">Enviar</button>
+      <button type="button" data-testid="stop-button" aria-label="Parar resposta" style="display:none">Parar</button>
+    </fieldset>
+  </footer>
+</body>
+</html>

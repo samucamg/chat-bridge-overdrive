@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>DeepSeek - Fixture</title>
+</head>
+<body>
+  <header>
+    <div data-testid="new-chat-button" role="button" aria-label="New chat">Novo chat</div>
+    <div data-testid="model-selector" class="ds-model-switch">DeepSeek R1</div>
+  </header>
+  <main>
+    <div class="ds-message">
+      <div class="ds-markdown">
+        <div class="ds-think-content">Cadeia de pensamento R1 interna que nao deve ir para a resposta final.</div>
+        <p>A arquitetura serial por provedor evita bloqueios por rate limit e Turnstile.</p>
+        <a class="ds-citation" href="https://api-docs.deepseek.com/" target="_blank">DeepSeek Docs</a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <textarea id="chat-input" placeholder="Envie uma mensagem para o DeepSeek"></textarea>
+    <div role="button" aria-disabled="false" class="ds-icon-button" data-testid="send-button" aria-label="Enviar">Enviar</div>
+    <button type="button" data-testid="stop-button" aria-label="Parar" style="display:none">Parar</button>
+  </footer>
+</body>
+</html>

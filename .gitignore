@@ -1,0 +1,189 @@
+# ==============================================================================
+# chat-overdrive-bridge - .gitignore de Blindagem Industrial
+# Projeto: Servidor MCP stdio para automacao Chrome CDP local (127.0.0.1:9222)
+# Regras: UTF-8 sem BOM, sem emojis, protecao estrita contra vazamento de
+#         sessoes, perfis do Chrome, credenciais, PII, tokens e logs locais.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Material interno do projeto de desenvolvimento (nunca vai ao repositorio)
+# ------------------------------------------------------------------------------
+agentes/
+.agents/
+_patches/
+_historico/
+_build/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+SISTEMA_E_PAPEIS.md
+PENDENCIAS.md
+
+# ------------------------------------------------------------------------------
+# 2. Node.js, Gerenciadores de Pacotes e Runtimes
+# ------------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+.pnpm-store/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.yarn-cache/
+.npm/
+.eslintcache
+.parcel-cache/
+
+# ------------------------------------------------------------------------------
+# 3. Google Chrome CDP, Perfis de Depuracao e Armazenamento de Sessao
+# ------------------------------------------------------------------------------
+# Perfis de usuario e diretorios de depuracao local
+chrome-profile/
+chrome_profile/
+chrome-debug-profile/
+chrome-profile-*/
+.chrome-profile/
+.chrome-debug/
+*Chrome-Overdrive-Bridge-Profile*/
+*chrome-profile*/
+*debug-profile*/
+*.profile/
+*.profile
+
+# Estrutura interna de perfis do Chromium / Chrome
+Default/
+Profile */
+Singleton*
+*Session Storage/
+*Local Storage/
+*IndexedDB/
+*Service Worker/
+*Cache/
+*GPUCache/
+*ShaderCache/
+*Crashpad/
+*BrowserMetrics*/
+
+# Dados de autenticacao, sessoes e navegacao do Chrome
+Cookies
+Cookies-journal
+Login Data*
+Web Data*
+History
+History-journal
+TransportSecurity
+Preferences
+Secure Preferences
+DevToolsActivePort
+
+# ------------------------------------------------------------------------------
+# 4. Segredos, Variaveis de Ambiente e Chaves Criptograficas
+# ------------------------------------------------------------------------------
+.env
+.env.*
+*.env
+!.env.example
+!.env.template
+.local/
+secrets/
+private/
+
+# Certificados, chaves privadas e pares de chaves
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+id_rsa*
+id_ed25519*
+id_ecdsa*
+*.kdbx
+
+# Tokens e credenciais de servicos e APIs
+*.credentials
+credentials.json
+client_secret*.json
+token.json
+tokens.json
+auth.json
+
+# ------------------------------------------------------------------------------
+# 5. Logs de Execucao, Historico e Rastreamento Local
+# ------------------------------------------------------------------------------
+*.log
+*.log.*
+logs_execucao/
+history.jsonl
+*.jsonl
+
+# ------------------------------------------------------------------------------
+# 6. Testes, Cobertura e Arquivos Temporarios
+# ------------------------------------------------------------------------------
+coverage/
+.nyc_output/
+*.lcov
+*.tmp
+*.tmp.*
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Patches temporarios soltos
+*.patch
+*.diff
+
+# ------------------------------------------------------------------------------
+# 7. Backups Locais, Amostras e Manifestos de Auditoria
+# ------------------------------------------------------------------------------
+backups_*/
+backups/
+*_privado*
+amostra*
+amostras/
+
+# ------------------------------------------------------------------------------
+# 8. Ambientes de Desenvolvimento e Editores (IDEs)
+# ------------------------------------------------------------------------------
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.sublime-*
+
+# ------------------------------------------------------------------------------
+# 9. Arquivos Especificos de Sistemas Operacionais
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+.fuse_hidden*

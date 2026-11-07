@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Gemini - Fixture</title>
+</head>
+<body>
+  <header>
+    <button data-test-id="new-chat-button" aria-label="Nova conversa">Nova conversa</button>
+    <button data-test-id="bard-mode-menu-button" class="model-switcher">Gemini 2.5 Pro</button>
+  </header>
+  <main>
+    <model-response>
+      <model-thoughts>
+        <div class="model-thoughts-content" data-test-id="thinking-content">Pensamento interno do modelo Gemini que deve ser descartado pelo filtro.</div>
+      </model-thoughts>
+      <message-content>
+        <div class="model-response-text markdown-main-panel">
+          <p>O protocolo CDP na porta local 127.0.0.1 permite inspecionar e controlar abas isoladas com seguranca.</p>
+          <a href="https://playwright.dev/docs/api/class-browsertype#browser-type-connect-over-cdp" target="_blank">Documentacao Playwright CDP</a>
+        </div>
+      </message-content>
+    </model-response>
+  </main>
+  <footer>
+    <rich-textarea>
+      <div class="ql-editor" contenteditable="true" role="textbox" aria-label="Insira um prompt aqui"></div>
+    </rich-textarea>
+    <button class="send-button" data-test-id="send-button" aria-label="Enviar mensagem">Enviar</button>
+    <button class="stop-button" data-test-id="stop-button" aria-label="Parar resposta" style="display:none">Parar</button>
+  </footer>
+</body>
+</html>

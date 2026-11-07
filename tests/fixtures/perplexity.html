@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Perplexity - Fixture</title>
+</head>
+<body>
+  <nav>
+    <a href="/" aria-label="Novo">Novo topico</a>
+  </nav>
+  <main>
+    <div data-workflow-entry="true">
+      <div class="thinking-panel" data-testid="thinking-step">Raciocinio interno temporario que nao deve sair na resposta final.</div>
+      <div data-workflow-final-text="true">
+        <div data-renderer="lm" class="prose">
+          <p>A arquitetura MCP stdio comunica diretamente com o processo local via entrada e saida padrao, dispensando portas HTTP abertas.</p>
+          <span data-pplx-citation="1"><a data-pplx-citation-url="https://modelcontextprotocol.io/specification" href="https://modelcontextprotocol.io/specification" target="_blank" class="citation">Especificacao MCP</a></span>
+          <span data-pplx-citation="2"><a data-pplx-citation-url="https://chromedevtools.github.io/devtools-protocol/" href="https://chromedevtools.github.io/devtools-protocol/" target="_blank" class="citation">Chrome DevTools Protocol</a></span>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div id="ask-input" role="textbox" contenteditable="true" data-lexical-editor="true" aria-label="Pergunte qualquer coisa"></div>
+    <button type="button" data-testid="submit-button" aria-label="Enviar"><svg><path d="M0 0"/></svg></button>
+    <button type="button" id="mock-stop-btn" data-testid="stop-button" aria-label="Parar" style="display:none"><svg><use href="#pplx-icon-player-stop"></use></svg></button>
+  </footer>
+</body>
+</html>
