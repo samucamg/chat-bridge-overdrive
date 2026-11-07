@@ -16,6 +16,7 @@ const SAFE_METADATA_KEYS = Object.freeze([
   'payload_bytes',
   'response_bytes',
   'sources_count',
+  'images_count',
   'status',
   'error_code'
 ]);

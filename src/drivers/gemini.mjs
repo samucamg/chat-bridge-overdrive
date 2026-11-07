@@ -109,6 +109,8 @@ export class GeminiDriver extends BaseDriver {
       ...options
     });
     this.defaultModel = 'gemini-web';
+    // Turno de resposta onde imagens geradas aparecem (nao validado ao vivo)
+    this.imageScope = 'model-response';
   }
 
 

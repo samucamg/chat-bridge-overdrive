@@ -598,6 +598,12 @@ export class BridgeServer {
             );
 
             const answer = await driver.extractAnswer(page);
+            let images = [];
+            try {
+              images = typeof driver.extractImages === 'function' ? await driver.extractImages(page) : [];
+            } catch (_) {
+              images = [];
+            }
 
             // Guarda a URL da conversa para esta sessao (so se mudou em relacao a pagina inicial)
             const afterUrl = currentUrl();
@@ -625,12 +631,14 @@ export class BridgeServer {
               payload_bytes: payloadBytes,
               response_bytes: responseBytes,
               sources_count: sourcesCount,
+              images_count: images.length,
               status: 'ok'
             });
 
             return {
               text: answer?.text || '',
               sources: answer?.sources || [],
+              ...(images.length > 0 ? { images } : {}),
               provider,
               model,
               ...(requestedModel ? { model_requested: requestedModel } : {}),
@@ -785,15 +793,25 @@ export class BridgeServer {
   async callTool(name, args = {}, ctx = {}) {
     try {
       const data = await this.invoke(name, args, ctx);
-      return {
-        content: [
-          {
-            type: 'text',
-            text: typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+      // Imagens viram conteudo MCP do tipo image; o texto JSON leva so metadados (sem base64)
+      const imgs = data && typeof data === 'object' && Array.isArray(data.images) ? data.images : [];
+      const textData = imgs.length
+        ? {
+            ...data,
+            images: imgs.map(({ data: _b64, ...meta }) => ({ ...meta, delivered: Boolean(_b64) })),
+            images_note: 'Imagens anexadas a esta resposta como conteudo image. Nao reenviar o prompt.'
           }
-        ],
-        data
-      };
+        : data;
+      const content = [
+        {
+          type: 'text',
+          text: typeof textData === 'string' ? textData : JSON.stringify(textData, null, 2)
+        }
+      ];
+      for (const im of imgs) {
+        if (im.data) content.push({ type: 'image', data: im.data, mimeType: im.mimeType || 'image/png' });
+      }
+      return { content, data };
     } catch (err) {
       const isKnown = isBridgeError(err);
       const errorCode = err.code || (isKnown ? ERROR_CODES.BLOCKED_BY_POLICY : 'INTERNAL_ERROR');

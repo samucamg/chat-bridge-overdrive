@@ -127,12 +127,14 @@ export class BaseDriver {
    * @param {object} [options.selectors={}] Mapeamento de seletores em 3 niveis
    * @param {string|null} [options.defaultModel=null] Nome padrao do modelo
    */
-  constructor({ provider, targetUrl, debounceMs = 400, selectors = {}, defaultModel = null } = {}) {
+  constructor({ provider, targetUrl, debounceMs = 400, selectors = {}, defaultModel = null, imageScope = null, imageFallbackScope = null } = {}) {
     this.provider = provider;
     this.targetUrl = targetUrl;
     this.debounceMs = debounceMs;
     this.selectors = selectors;
     this.defaultModel = defaultModel || `${provider}-web`;
+    this.imageScope = imageScope;
+    this.imageFallbackScope = imageFallbackScope;
   }
 
   /**
@@ -384,54 +386,6 @@ export class BaseDriver {
   }
 
   /**
-   * Registra o estado das respostas ANTES do envio (quantidade e texto da ultima). O waitDone usa
-   * esse baseline para nao confundir a resposta do turno anterior com a do turno atual em
-   * conversas continuadas.
-   * @param {any} page
-   * @returns {Promise<{ count: number, lastText: string }>}
-   */
-  async captureBaseline(page) {
-    const sel = this.getSelectorString(this.selectors?.response);
-    if (!page || typeof page.evaluate !== 'function' || !sel) return { count: 0, lastText: '' };
-    try {
-      const base = await page.evaluate((s) => {
-        const els = document.querySelectorAll(s);
-        return {
-          count: els.length,
-          lastText: els.length ? (els[els.length - 1].textContent || '').trim() : ''
-        };
-      }, sel);
-      return base && typeof base === 'object' ? base : { count: 0, lastText: '' };
-    } catch (e) {
-      return { count: 0, lastText: '' };
-    }
-  }
-
-  /**
-   * Registra o estado das respostas ANTES do envio (quantidade e texto da ultima). O waitDone usa
-   * esse baseline para nao confundir a resposta do turno anterior com a do turno atual em
-   * conversas continuadas.
-   * @param {any} page
-   * @returns {Promise<{ count: number, lastText: string }>}
-   */
-  async captureBaseline(page) {
-    const sel = this.getSelectorString(this.selectors?.response);
-    if (!page || typeof page.evaluate !== 'function' || !sel) return { count: 0, lastText: '' };
-    try {
-      const base = await page.evaluate((s) => {
-        const els = document.querySelectorAll(s);
-        return {
-          count: els.length,
-          lastText: els.length ? (els[els.length - 1].textContent || '').trim() : ''
-        };
-      }, sel);
-      return base && typeof base === 'object' ? base : { count: 0, lastText: '' };
-    } catch (e) {
-      return { count: 0, lastText: '' };
-    }
-  }
-
-  /**
    * Envia texto para o chat via CDP ou fallback.
    * @param {any} page
    * @param {string} text
@@ -600,6 +554,269 @@ export class BaseDriver {
    */
   async extractAnswer(page) {
     throw new Error('Metodo extractAnswer() deve ser implementado pelo driver especifico');
+  }
+
+  /**
+   * Extrai imagens geradas na ultima resposta (ex.: "gere uma imagem de ...").
+   * So age se o driver definir `imageScope` (seletor do turno do assistente).
+   * Suporta fallbackScope para ChatGPT quando a imagem fica fora do div do assistente.
+   * Le os bytes de dentro da propria pagina (usa a sessao ja logada) e devolve base64.
+   * Fallback de download via canvas (drawImage + toDataURL) e conversao de webp para png.
+   * Imagens pequenas (icones, avatares, favicons) sao ignoradas (< 256 px).
+   * Limites: CHAT_BRIDGE_MAX_IMAGE_BYTES (por imagem, padrao 8 MB) e CHAT_BRIDGE_MAX_IMAGES (padrao 4).
+   * @param {any} page
+   * @returns {Promise<Array<{ index: number, alt: string, mimeType: string, bytes: number, data?: string, skipped?: string }>>}
+   */
+  async extractImages(page) {
+    const scope = this.imageScope;
+    if (!scope || !page || typeof page.evaluate !== 'function') return [];
+    const fallbackScope = [].concat(this.imageFallbackScope || []);
+    const maxBytes = Number(process.env.CHAT_BRIDGE_MAX_IMAGE_BYTES) || 8 * 1024 * 1024;
+    const maxImages = Number(process.env.CHAT_BRIDGE_MAX_IMAGES) || 4;
+    const appearMs = Number(process.env.CHAT_BRIDGE_IMAGE_APPEAR_MS) || 3000;
+    const loadMs = Number(process.env.CHAT_BRIDGE_IMAGE_LOAD_MS) || 20000;
+    const found = await page.evaluate(async ({ scope, fallbackScope, maxBytes, maxImages, appearMs, loadMs }) => {
+      const out = [];
+
+      // Espera a imagem carregar: o texto pode terminar antes da imagem (naturalWidth 0).
+      // Ate appearMs para surgir alguma img no ultimo turno; havendo img, ate loadMs para carregar.
+      const lastTurnImgs = () => {
+        for (const sel of [scope, ...fallbackScope]) {
+          if (!sel) continue;
+          const t = document.querySelectorAll(sel);
+          if (t.length) {
+            const imgs = Array.from(t[t.length - 1].querySelectorAll('img'));
+            if (imgs.length) return imgs;
+          }
+        }
+        return [];
+      };
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      const t0 = Date.now();
+      while (Date.now() - t0 < appearMs + loadMs) {
+        const imgs = lastTurnImgs();
+        if (!imgs.length && Date.now() - t0 >= appearMs) break;
+        if (imgs.length && imgs.some((i) => i.complete && (i.naturalWidth || 0) >= 256)) break;
+        if (imgs.length && imgs.every((i) => i.complete !== false) && Date.now() - t0 >= appearMs) break;
+        await sleep(400);
+      }
+
+      const isEligible = (img) => {
+        if (!img) return false;
+        const w = img.naturalWidth || img.width || Number(img.getAttribute('width')) || 0;
+        const h = img.naturalHeight || img.height || Number(img.getAttribute('height')) || 0;
+        if (w < 256 || h < 256) return false;
+        try {
+          if (img.closest('a[href^="http"]:not([href*="chatgpt.com"])')) return false;
+        } catch {
+          // tolera falha de seletor
+        }
+        return true;
+      };
+
+      let candidateImgs = [];
+      const turns = document.querySelectorAll(scope);
+      if (turns.length) {
+        const lastTurn = turns[turns.length - 1];
+        candidateImgs = Array.from(lastTurn.querySelectorAll('img')).filter(isEligible);
+      }
+
+      for (const fb of fallbackScope) {
+        if (candidateImgs.length) break;
+        const fallbackTurns = document.querySelectorAll(fb);
+        if (fallbackTurns.length) {
+          const lastFallback = fallbackTurns[fallbackTurns.length - 1];
+          candidateImgs = Array.from(lastFallback.querySelectorAll('img')).filter(isEligible);
+        }
+      }
+
+      if (!candidateImgs.length) return out;
+
+      const isSameOrigin = (urlStr) => {
+        if (!urlStr) return false;
+        if (urlStr.startsWith('blob:') || urlStr.startsWith('data:')) return true;
+        try {
+          const u = new URL(urlStr, window.location.href);
+          return u.origin === window.location.origin;
+        } catch {
+          return false;
+        }
+      };
+
+      const toBase64FromBlob = async (blob) => {
+        const buf = new Uint8Array(await blob.arrayBuffer());
+        let bin = '';
+        for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+        return btoa(bin);
+      };
+
+      const drawToPng = async (imgEl, blobObj) => {
+        const canvas = document.createElement('canvas');
+        let drawn = false;
+        if (blobObj && typeof createImageBitmap === 'function') {
+          try {
+            const bmp = await createImageBitmap(blobObj);
+            canvas.width = bmp.width;
+            canvas.height = bmp.height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(bmp, 0, 0);
+              drawn = true;
+            }
+            if (bmp && typeof bmp.close === 'function') bmp.close();
+          } catch {
+            drawn = false;
+          }
+        }
+        if (!drawn && imgEl) {
+          try {
+            const w = imgEl.naturalWidth || imgEl.width || 0;
+            const h = imgEl.naturalHeight || imgEl.height || 0;
+            if (w > 0 && h > 0) {
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                ctx.drawImage(imgEl, 0, 0);
+                drawn = true;
+              }
+            }
+          } catch {
+            drawn = false;
+          }
+        }
+        if (!drawn) return null;
+        try {
+          const dataUrl = canvas.toDataURL('image/png');
+          const comma = dataUrl.indexOf(',');
+          if (comma === -1) return null;
+          const base64 = dataUrl.slice(comma + 1);
+          if (!base64) return null;
+          const pad = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
+          const bytes = Math.max(0, Math.floor((base64.length * 3) / 4) - pad);
+          return { data: base64, bytes, mimeType: 'image/png' };
+        } catch {
+          return null;
+        }
+      };
+
+      let index = 0;
+      for (const img of candidateImgs) {
+        if (out.length >= maxImages) break;
+        index += 1;
+        const item = { index, alt: (img.getAttribute('alt') || '').slice(0, 200), mimeType: '', bytes: 0 };
+        const src = img.currentSrc || img.src;
+        if (!src) {
+          item.skipped = 'FETCH_FAILED';
+          out.push(item);
+          continue;
+        }
+
+        let blob = null;
+        let httpStatus = null;
+        let fetchFailed = false;
+
+        // 1. Tentar primeiro fetch com credentials: 'include'
+        try {
+          const res = await fetch(src, { credentials: 'include' });
+          if (res.ok) {
+            blob = await res.blob();
+          } else {
+            httpStatus = res.status;
+          }
+        } catch {
+          fetchFailed = true;
+        }
+
+        // 2. Se falhou (fetch lancou erro ou !res.ok), tentar fallbacks
+        let canvasFallback = null;
+        if (!blob) {
+          // Se for same-origin, tentar canvas primeiro
+          if (isSameOrigin(src)) {
+            canvasFallback = await drawToPng(img, null);
+          }
+
+          // Se canvas nao funcionou ou nao era same-origin, tentar fetch sem credentials
+          if (!canvasFallback) {
+            try {
+              const resOmit = await fetch(src, { credentials: 'omit' });
+              if (resOmit.ok) {
+                blob = await resOmit.blob();
+              } else if (!httpStatus) {
+                httpStatus = resOmit.status;
+              }
+            } catch {
+              // fetch omit tambem falhou
+            }
+          }
+
+          // Se ainda nao obteve bytes, tentar canvas como ultimo recurso
+          if (!blob && !canvasFallback) {
+            canvasFallback = await drawToPng(img, null);
+          }
+        }
+
+        // 3. Processar bytes obtidos via canvas fallback
+        if (canvasFallback) {
+          item.mimeType = canvasFallback.mimeType;
+          item.bytes = canvasFallback.bytes;
+          if (canvasFallback.bytes > maxBytes) {
+            item.skipped = 'TOO_LARGE';
+          } else {
+            item.data = canvasFallback.data;
+          }
+          out.push(item);
+          continue;
+        }
+
+        // 4. Processar bytes obtidos via blob (fetch include ou fetch omit)
+        if (blob) {
+          const rawType = (blob.type || '').toLowerCase();
+          const standardTypes = ['image/png', 'image/jpeg', 'image/gif'];
+          if (!standardTypes.includes(rawType)) {
+            // Conversao para image/png via canvas para webp ou outros formatos
+            const converted = await drawToPng(img, blob);
+            if (converted) {
+              item.mimeType = 'image/png';
+              item.bytes = converted.bytes;
+              if (converted.bytes > maxBytes) {
+                item.skipped = 'TOO_LARGE';
+              } else {
+                item.data = converted.data;
+              }
+              out.push(item);
+              continue;
+            }
+          }
+
+          // Formato padrao ou se conversao canvas nao foi possivel
+          item.mimeType = blob.type || 'image/png';
+          item.bytes = blob.size;
+          if (blob.size > maxBytes) {
+            item.skipped = 'TOO_LARGE';
+          } else {
+            try {
+              item.data = await toBase64FromBlob(blob);
+            } catch {
+              item.skipped = 'FETCH_FAILED';
+            }
+          }
+          out.push(item);
+          continue;
+        }
+
+        // 5. Se tudo falhou (nem blob nem canvas)
+        if (httpStatus) {
+          item.skipped = 'HTTP_' + httpStatus;
+        } else {
+          item.skipped = 'FETCH_FAILED';
+        }
+        out.push(item);
+      }
+
+      return out;
+    }, { scope, fallbackScope, maxBytes, maxImages, appearMs, loadMs }).catch(() => []);
+    return Array.isArray(found) ? found : [];
   }
 
   /**

@@ -137,6 +137,11 @@ export class ChatGPTDriver extends BaseDriver {
       ...options
     });
     this.defaultModel = 'chatgpt-web';
+    // Turno onde imagens geradas aparecem. DOM real (2026-11-07): img dentro de
+    // div[data-testid="generated-image-gallery"] dentro de div[data-turn-key];
+    // data-message-author-role e article nao existem mais.
+    this.imageScope = 'div[data-turn-key]';
+    this.imageFallbackScope = ['div[data-message-author-role="assistant"]', 'article[data-testid^="conversation-turn"]'];
   }
 
   /**
