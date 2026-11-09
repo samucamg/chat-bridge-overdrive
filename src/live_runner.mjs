@@ -27,7 +27,7 @@ export const ALLOWED_LIVE_TEST_PROMPTS = Object.freeze([
  */
 export async function runLiveHomologation({
   cdpManager = null,
-  providers = ['perplexity', 'gemini', 'chatgpt', 'claude', 'deepseek'],
+  providers = ['perplexity', 'gemini', 'chatgpt', 'claude', 'deepseek', 'copilot', 'meta', 'groq', 'grok'],
   mode = 'doctor_only',
   testPrompt = 'Responda apenas OK em uma palavra.',
   delayMs = 1000,

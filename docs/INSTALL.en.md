@@ -6,7 +6,7 @@ Portuguese version: [INSTALL.pt-BR.md](INSTALL.pt-BR.md) | Back to the [README](
 
 - Node.js 20 or newer (`node -v`)
 - Google Chrome installed
-- An MCP client that can launch a stdio server (for example Claude Desktop, Claude Code, or any client that accepts a `command` plus `args`)
+- An MCP client that can launch a stdio server (for example Antigravity IDE, Claude Code, OpenAI Codex, DeepSeek Harness/DSH, Claude Desktop, Cursor, Windsurf)
 - Accounts already signed in on the chats you want to use
 
 ## 2. Install
@@ -55,15 +55,28 @@ google-chrome --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 
   --user-data-dir="$HOME/.chrome-overdrive-bridge-profile"
 ```
 
-In that Chrome window, open each chat and sign in once (perplexity.ai, gemini.google.com, chatgpt.com, claude.ai, chat.deepseek.com). The session stays in the isolated profile.
+In that Chrome window, open each chat and sign in once for the providers you want to use:
+- Perplexity (`https://www.perplexity.ai`)
+- Gemini (`https://gemini.google.com`)
+- ChatGPT (`https://chatgpt.com`)
+- Claude (`https://claude.ai`)
+- DeepSeek (`https://chat.deepseek.com`)
+- Copilot (`https://copilot.cloud.microsoft`)
+- Meta AI (`https://www.meta.ai`)
+- Groq (`https://chat.groq.com/?model=qwen/qwen3.8-27b` — use this URL with `qwen/qwen3.8-27b` to avoid the default Arabic model and enable automatic 429 rotation)
+- Grok (`https://grok.com/` — operating in free modes `Fast` and `Build`)
+
+The session stays in the isolated profile.
 
 Check that CDP is up: open `http://127.0.0.1:9222/json/version` in a browser. You should see JSON.
 
 ## 4. Register the server in your MCP client
 
-If you used the automatic installer (section 2a), it already did this for the clients you chose. Antigravity: by hand, add the snippet below to its `mcp_config.json` (normally `C:\Users\<you>\.gemini\config\mcp_config.json`).
+If you used the automatic installer (section 2a), it already did this for the clients you chose. Use the absolute path of the `src/server.mjs` file you cloned.
 
-Use the absolute path of the `src/server.mjs` file you cloned.
+### Antigravity IDE (and Claude Code running inside Antigravity IDE)
+
+Add the block below to your `mcp_config.json` (normally at `C:\Users\<you>\.gemini\config\mcp_config.json` or `%USERPROFILE%\.gemini\antigravity\mcp_config.json`):
 
 ```json
 {
@@ -76,13 +89,55 @@ Use the absolute path of the `src/server.mjs` file you cloned.
 }
 ```
 
-On Claude Code you can instead run:
+### Claude Code (CLI / IDE)
 
-```
-claude mcp add chat-overdrive-bridge -- node /path/to/chat-overdrive-bridge/src/server.mjs
+Run in your terminal:
+
+```bash
+claude mcp add --scope user chat-overdrive-bridge -- node C:/path/to/chat-overdrive-bridge/src/server.mjs
 ```
 
-Restart the client. It should list 11 tools: `ask_perplexity`, `ask_gemini`, `ask_chatgpt`, `ask_claude`, `ask_deepseek`, `compare_web_chats`, `ask_web_chat`, `list_chat_sessions`, `cancel_chat`, `chat_bridge_status`, `preview_payload`.
+### OpenAI Codex (`~/.codex/config.toml`)
+
+Add the `[mcp_servers.chat-overdrive-bridge]` block in `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.chat-overdrive-bridge]
+command = "node"
+args = ["C:/path/to/chat-overdrive-bridge/src/server.mjs"]
+```
+
+### DeepSeek Harness — DSH (`~/.dsh/profiles/web/cordis.patch.yml`)
+
+Configure the `@deepseek-ai/dsh-mcp-client` plugin in your profile configuration:
+
+```yaml
+plugins:
+  - name: "@deepseek-ai/dsh-mcp-client"
+    config:
+      serverName: bridge
+      transport: stdio
+      command: node
+      args:
+        - "C:/path/to/chat-overdrive-bridge/src/server.mjs"
+```
+
+### Claude Desktop / Cursor / Windsurf / other MCP stdio clients
+
+Add the standard `mcpServers` JSON block in your client configuration file (e.g. `claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "chat-overdrive-bridge": {
+      "command": "node",
+      "args": ["C:/path/to/chat-overdrive-bridge/src/server.mjs"]
+    }
+  }
+}
+```
+
+Restart the client. It should list 15 tools: `ask_perplexity`, `ask_gemini`, `ask_chatgpt`, `ask_claude`, `ask_deepseek`, `ask_copilot`, `ask_meta`, `ask_groq`, `ask_grok`, `compare_web_chats`, `ask_web_chat`, `list_chat_sessions`, `cancel_chat`, `chat_bridge_status`, `preview_payload`.
 
 ## 5. First use
 

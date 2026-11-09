@@ -7,6 +7,53 @@ import { ProviderQueueManager } from './queue.mjs';
 import { SessionManager } from './sessions.mjs';
 import { CdpManager } from './cdp.mjs';
 import { getDriver, runDoctor, DRIVERS, normalizeProvider, PROVIDER_NAMES } from './doctor.mjs';
+import { PerplexityDriver } from './drivers/perplexity.mjs';
+import { GeminiDriver } from './drivers/gemini.mjs';
+import { ChatGPTDriver } from './drivers/chatgpt.mjs';
+import { ClaudeDriver } from './drivers/claude.mjs';
+import { DeepSeekDriver } from './drivers/deepseek.mjs';
+import { CopilotDriver } from './drivers/copilot.mjs';
+import { MetaDriver } from './drivers/meta.mjs';
+import { GroqDriver } from './drivers/groq.mjs';
+import { GrokDriver } from './drivers/grok.mjs';
+
+/**
+ * Lista dos 9 provedores suportados.
+ */
+export const SUPPORTED_PROVIDERS = PROVIDER_NAMES;
+
+/**
+ * URLs padrao de entrada para cada provedor.
+ */
+export const PROVIDER_URLS = Object.freeze({
+  perplexity: 'https://www.perplexity.ai/',
+  gemini: 'https://gemini.google.com/',
+  chatgpt: 'https://chatgpt.com/',
+  claude: 'https://claude.ai/',
+  deepseek: 'https://chat.deepseek.com/',
+  copilot: 'https://copilot.cloud.microsoft/chat',
+  meta: 'https://www.meta.ai/',
+  groq: 'https://chat.groq.com/?model=qwen/qwen3.8-27b',
+  grok: 'https://grok.com/'
+});
+
+/**
+ * Cria instancias padrao de todos os drivers suportados.
+ * @returns {object}
+ */
+export function createDefaultDrivers() {
+  return {
+    perplexity: new PerplexityDriver(),
+    gemini: new GeminiDriver(),
+    chatgpt: new ChatGPTDriver(),
+    claude: new ClaudeDriver(),
+    deepseek: new DeepSeekDriver(),
+    copilot: new CopilotDriver(),
+    meta: new MetaDriver(),
+    groq: new GroqDriver(),
+    grok: new GrokDriver()
+  };
+}
 
 /**
  * Ferramentas autorizadas expostas pelo chat-overdrive-bridge.
@@ -15,14 +62,14 @@ import { getDriver, runDoctor, DRIVERS, normalizeProvider, PROVIDER_NAMES } from
 export const MCP_TOOLS = Object.freeze([
   {
     name: 'ask_web_chat',
-    description: "Ask a web chat (Perplexity, Gemini, ChatGPT, Claude or DeepSeek) using the user's own signed-in browser session, and return its answer with sources. Use it when the user names one of these chats, for example \"ask Gemini\", \"use ChatGPT web\", \"pergunte ao Perplexity\", \"consulte o Claude web\", or says \"use the bridge\". Prefer the ask_<provider> tools when a single chat is named. The prompt is checked for secrets and personal data first and blocked (BLOCKED_BY_POLICY) if any is found. / Consulta um chat web (Perplexity, Gemini, ChatGPT, Claude ou DeepSeek) usando a sessao logada do proprio navegador do usuario e devolve a resposta com fontes. Via Chrome CDP local 127.0.0.1:9222, com sanitizacao previa e fila por provedor.",
+    description: "Ask a web chat (Perplexity, Gemini, ChatGPT, Claude, DeepSeek, Copilot, Meta AI, Groq or Grok) using the user's own signed-in browser session, and return its answer with sources. Use it when the user names one of these chats, for example \"ask Gemini\", \"use ChatGPT web\", \"pergunte ao Perplexity\", \"consulte o Claude web\", \"ask Copilot\", \"use Meta AI\", \"ask Groq\", \"use Grok\", or says \"use the bridge\". Prefer the ask_<provider> tools when a single chat is named. The prompt is checked for secrets and personal data first and blocked (BLOCKED_BY_POLICY) if any is found. / Consulta um chat web (Perplexity, Gemini, ChatGPT, Claude, DeepSeek, Copilot, Meta AI, Groq ou Grok) usando a sessao logada do proprio navegador do usuario e devolve a resposta com fontes. Via Chrome CDP local 127.0.0.1:9222, com sanitizacao previa e fila por provedor.",
     inputSchema: {
       type: 'object',
       properties: {
         provider: {
           type: 'string',
-          enum: ['perplexity', 'gemini', 'chatgpt', 'claude', 'deepseek'],
-          description: 'Identificador do provedor de chat web (perplexity, gemini, chatgpt, claude, deepseek)'
+          enum: ['perplexity', 'gemini', 'chatgpt', 'claude', 'deepseek', 'copilot', 'meta', 'groq', 'grok'],
+          description: 'Identificador do provedor de chat web (perplexity, gemini, chatgpt, claude, deepseek, copilot, meta, groq, grok)'
         },
         prompt: {
           type: 'string',
@@ -123,7 +170,7 @@ export const MCP_TOOLS = Object.freeze([
       properties: {
         provider: {
           type: 'string',
-          enum: ['perplexity', 'gemini', 'chatgpt', 'claude', 'deepseek'],
+          enum: ['perplexity', 'gemini', 'chatgpt', 'claude', 'deepseek', 'copilot', 'meta', 'groq', 'grok'],
           description: 'Identificador do provedor (opcional)'
         },
         prompt: {
@@ -175,6 +222,30 @@ const PROVIDER_INFO = Object.freeze({
     site: 'chat.deepseek.com',
     say: ['ask DeepSeek', 'use DeepSeek web', 'pergunte ao DeepSeek', 'consulte o DeepSeek'],
     note: 'DeepSeek answer.'
+  },
+  copilot: {
+    label: 'Microsoft Copilot',
+    site: 'copilot.cloud.microsoft',
+    say: ['ask Copilot', 'use Copilot web', 'pergunte ao Copilot', 'use o Microsoft Copilot'],
+    note: 'Microsoft Copilot answer.'
+  },
+  meta: {
+    label: 'Meta AI',
+    site: 'meta.ai',
+    say: ['ask Meta AI', 'use Meta AI web', 'pergunte ao Meta AI', 'consulte a Meta AI'],
+    note: 'Meta AI (Llama) answer.'
+  },
+  groq: {
+    label: 'Groq (chat.groq.com)',
+    site: 'chat.groq.com',
+    say: ['ask Groq', 'use Groq web', 'pergunte ao Groq', 'consulte o Groq'],
+    note: 'Groq ultra-fast web chat answer.'
+  },
+  grok: {
+    label: 'Grok (xAI grok.com)',
+    site: 'grok.com',
+    say: ['ask Grok', 'use Grok web', 'pergunte ao Grok', 'consulte o Grok'],
+    note: 'xAI Grok web chat answer.'
   }
 });
 
@@ -199,8 +270,8 @@ const PROVIDER_TOOLS = PROVIDER_NAMES.map((provider) => {
 const COMPARE_TOOL = {
   name: 'compare_web_chats',
   description:
-    'Ask several web chats the same question at once (default: Perplexity, Gemini, ChatGPT, Claude and ' +
-    'DeepSeek) and return every answer side by side, so the user can compare or get a second opinion. ' +
+    'Ask several web chats the same question at once (default: Perplexity, Gemini, ChatGPT, Claude, ' +
+    'DeepSeek, Copilot, Meta AI, Groq and Grok) and return every answer side by side, so the user can compare or get a second opinion. ' +
     'Use it for "compare Gemini and ChatGPT", "ask all the chats", "get a second opinion", ' +
     '"pergunte a todos", "compare as respostas". Different providers run in parallel; a provider that is ' +
     'not signed in returns its own error without stopping the others. / Pergunta a varios chats web ao ' +
@@ -212,7 +283,7 @@ const COMPARE_TOOL = {
       providers: {
         type: 'array',
         items: { type: 'string' },
-        description: 'Chats to ask: perplexity, gemini, chatgpt, claude, deepseek (aliases like "ChatGPT web" are accepted). Default: all five.'
+        description: 'Chats to ask: perplexity, gemini, chatgpt, claude, deepseek, copilot, meta, groq, grok (aliases like "ChatGPT web" are accepted). Default: all nine.'
       },
       new_chat: { type: 'boolean', description: 'Start a new conversation in each chat (default true)' },
       timeout_s: { type: 'number', description: 'Maximum wait per chat in seconds (default 120)' }
@@ -225,6 +296,22 @@ const COMPARE_TOOL = {
  * Lista completa de tools expostas ao cliente MCP: a generica, uma por provedor e a de comparacao.
  */
 export const ALL_MCP_TOOLS = Object.freeze([...MCP_TOOLS, ...PROVIDER_TOOLS, COMPARE_TOOL]);
+export const TOOLS = ALL_MCP_TOOLS;
+
+/**
+ * Despachador de chamadas de ferramentas MCP para compatibilidade e integracao direta.
+ * @param {BridgeServer} server
+ * @param {string} name
+ * @param {object} [args={}]
+ * @param {object} [ctx={}]
+ * @returns {Promise<any>}
+ */
+export async function handleToolCall(server, name, args = {}, ctx = {}) {
+  if (!server) {
+    throw new BridgeError(ERROR_CODES.BLOCKED_BY_POLICY, 'Instancia do servidor e obrigatoria');
+  }
+  return server.invoke(name, args, ctx);
+}
 
 /**
  * Cria uma instancia do servidor MCP do chat-overdrive-bridge.

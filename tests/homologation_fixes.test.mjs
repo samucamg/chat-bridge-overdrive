@@ -33,10 +33,10 @@ test('waitForComposer - espera o editor, nunca lanca e tolera pagina sem waitFor
       calls.push({ sel, opts });
     }
   };
-  for (const name of ['perplexity', 'gemini', 'chatgpt', 'claude', 'deepseek']) {
+  for (const name of ['perplexity', 'gemini', 'chatgpt', 'claude', 'deepseek', 'copilot', 'meta', 'groq', 'grok']) {
     assert.equal(await DRIVERS[name].waitForComposer(page, 50), true, name);
   }
-  assert.equal(calls.length, 5);
+  assert.equal(calls.length, 9);
   assert.equal(calls[0].opts.state, 'attached');
 
   const failing = { waitForSelector: async () => { throw new Error('timeout'); } };

@@ -43,6 +43,16 @@ export const SECRET_PATTERNS = Object.freeze([
     regex: /\bsk-(?:proj-|live-|test-)?[0-9A-Za-z_-]{20,}\b/
   },
   {
+    id: 'groq_api_key',
+    label: 'Chave de API do Groq',
+    regex: /\bgsk_[0-9A-Za-z_-]{20,}\b/
+  },
+  {
+    id: 'xai_api_key',
+    label: 'Chave de API da xAI / Grok',
+    regex: /\bxai-[0-9A-Za-z_-]{20,}\b/
+  },
+  {
     id: 'github_token',
     label: 'Token de acesso do GitHub',
     regex: /\b(?:gh[pousr]_[0-9A-Za-z]{20,}|github_pat_[0-9A-Za-z_]{20,})\b/

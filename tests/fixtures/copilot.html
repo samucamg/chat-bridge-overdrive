@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Microsoft Copilot - Fixture</title>
+</head>
+<body>
+  <header>
+    <a href="/chat?es=Click" class="fui-NavItem spa-link" aria-label="Novo chat">Novo chat</a>
+  </header>
+  <main>
+    <div data-testid="copilot-message-div">
+      <h6 class="fai-CopilotMessage__accessibleHeading">Copilot said: </h6>
+      <div class="fai-CopilotMessage__content">
+        <div data-testid="markdown-reply">
+          <p>Resposta inicial do Microsoft Copilot sobre HTTP/2.</p>
+        </div>
+      </div>
+    </div>
+    <div data-testid="copilot-message-div">
+      <h6 class="fai-CopilotMessage__accessibleHeading">Copilot said: </h6>
+      <div class="fai-CopilotMessage__content">
+        <div data-testid="markdown-reply">
+          <p>Resposta final do Microsoft Copilot sobre HTTP/3.</p>
+          <a class="fui-Link" href="https://datatracker.ietf.org/doc/html/rfc9114" target="_blank">RFC 9114</a>
+          <a class="fui-Link" href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3" target="_blank">Microsoft Docs HTTP/3</a>
+        </div>
+        <div class="fai-Suggestion">Sugestao extra</div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="fai-BebopLiteChatInput">
+      <input type="file" id="upload-file-button" multiple />
+      <span id="m365-chat-editor-target-element" role="textbox" contenteditable="true" data-lexical-editor="true"></span>
+      <button type="submit" class="fai-SendButton fai-BebopLiteChatInput__send" aria-label="Enviar"><svg class="fai-SendButton__sendIcon"></svg></button>
+      <button class="fai-SendButton" aria-label="Parar de gerar" style="display: none;"><svg><rect></rect></svg></button>
+    </div>
+  </footer>
+</body>
+</html>

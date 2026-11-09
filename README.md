@@ -5,9 +5,9 @@
 ### Seus assistentes de IA. Seus chats web. Uma ponte local.
 ### Your AI assistants. Your web chats. One local bridge.
 
-Use o Gemini, o ChatGPT, o Claude, o Perplexity e o DeepSeek direto do seu assistente (como o Antigravity), com as suas próprias contas: sem extensão de navegador e sem pagar por chave de API.
+Use o Gemini, o ChatGPT, o Claude, o Perplexity, o DeepSeek, o Copilot, o Meta AI, o Groq e o Grok direto do seu assistente (como o Antigravity), com as suas próprias contas: sem extensão de navegador e sem pagar por chave de API.
 
-Use Gemini, ChatGPT, Claude, Perplexity and DeepSeek straight from your assistant (such as Antigravity), with your own accounts: no browser extension and no pay-per-use API key.
+Use Gemini, ChatGPT, Claude, Perplexity, DeepSeek, Copilot, Meta AI, Groq and Grok straight from your assistant (such as Antigravity), with your own accounts: no browser extension and no pay-per-use API key.
 
 <p align="center">
   <a href="https://github.com/samucamg/chat-overdrive-bridge">
@@ -32,7 +32,7 @@ Use Gemini, ChatGPT, Claude, Perplexity and DeepSeek straight from your assistan
     <img src="https://img.shields.io/badge/Google%20Chrome-necess%C3%A1rio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Google Chrome necessário">
   </a>
   <a href="#pt-chats">
-    <img src="https://img.shields.io/badge/5%20chats-testados-111827?style=for-the-badge" alt="Cinco chats testados">
+    <img src="https://img.shields.io/badge/9%20chats-testados-111827?style=for-the-badge" alt="Nove chats testados">
   </a>
 </p>
 
@@ -85,7 +85,7 @@ Use Gemini, ChatGPT, Claude, Perplexity and DeepSeek straight from your assistan
 
 ## ✨ O que é e para que serve
 
-Você já tem conta no Gemini, no ChatGPT, no Claude, no Perplexity ou no DeepSeek? O `chat-overdrive-bridge` deixa o seu assistente (como o **Antigravity**) conversar com esses chats pelo seu navegador Chrome. A resposta aparece no próprio chat do seu assistente.
+Você já tem conta no Gemini, no ChatGPT, no Claude, no Perplexity, no DeepSeek, no Copilot, no Meta AI, no Groq ou no Grok? O `chat-overdrive-bridge` deixa o seu assistente (como o **Antigravity**) conversar com esses chats pelo seu navegador Chrome. A resposta aparece no próprio chat do seu assistente.
 
 Sem copiar e colar entre janelas. Sem trocar de modelo no assistente. Sem extensão de navegador. Sem pagar à parte pelo uso.
 
@@ -94,7 +94,7 @@ Sem copiar e colar entre janelas. Sem trocar de modelo no assistente. Sem extens
 ### Por que usar?
 
 - ⚡ **Use a cota do seu plano de chat.** Modelos avançados, como o Gemini, funcionam com a cota da sua conta no site, sem pagar por chave de API.
-- 🆓 **Chats gratuitos valem.** O DeepSeek na web é gratuito e funciona igual aos outros.
+- 🆓 **Chats gratuitos valem.** O DeepSeek, o Groq (iniciando em Qwen 3.8 27B) e o Grok (modos Fast e Build) na web são gratuitos e funcionam igual aos outros.
 - 💻 **Planos como o ChatGPT Go também servem para programar**, em vez de depender só da cota do seu assistente de código. As regras de cota são de cada serviço e podem mudar.
 - 🔌 **Fique no Antigravity.** Sem trocar de modelo nem de janela: basta o Chrome de teste aberto, com os chats logados.
 - 🧭 **Peça uma segunda opinião.** Compare as respostas de vários chats com uma única pergunta.
@@ -120,8 +120,12 @@ Sem copiar e colar entre janelas. Sem trocar de modelo no assistente. Sem extens
 | ChatGPT (inclusive o Go) | [chatgpt.com](https://chatgpt.com/) | “Pergunte ao ChatGPT…” |
 | Claude | [claude.ai](https://claude.ai/) | “Consulte o Claude web…” |
 | DeepSeek (gratuito) | [chat.deepseek.com](https://chat.deepseek.com/) | “Peça ao DeepSeek…” |
+| Microsoft Copilot | [copilot.cloud.microsoft](https://copilot.cloud.microsoft/) | “Pergunte ao Copilot…” |
+| Meta AI | [meta.ai](https://www.meta.ai/) | “Pergunte ao Meta AI…” |
+| Groq | [chat.groq.com](https://chat.groq.com/?model=qwen/qwen3.8-27b) | “Pergunte ao Groq…” (inicia no Qwen 3.8 27B evitando o árabe padrão; troca automática de modelo se bater 429) |
+| Grok (xAI) | [grok.com](https://grok.com/) | “Pergunte ao Grok…” (opera nos modos gratuitos Fast e Build, com busca web e citações) |
 
-Os cinco chats foram testados pelo autor no Windows 10, com o Chrome e o Antigravity.
+Os nove chats foram testados pelo autor no Windows 10, com o Chrome e o Antigravity.
 
 No ChatGPT Go, no Plus e nos demais planos, os modelos, os recursos e as cotas dependem da sua conta no site. O projeto não concede acesso adicional a modelos.
 
@@ -129,11 +133,14 @@ No ChatGPT Go, no Plus e nos demais planos, os modelos, os recursos e as cotas d
 
 | Item | Situação atual |
 | :--- | :--- |
-| Google Antigravity | Testado pelo autor no Windows 10 |
-| Claude Desktop | Registro preparado; ainda não testado pelo autor |
-| Claude Code | Registro preparado; ainda não testado pelo autor |
+| Google Antigravity IDE | Testado pelo autor no Windows 10 (suporta também execução com extensão/agente Claude Code dentro da Antigravity IDE) |
+| Claude Code (CLI e extensão em IDEs como Antigravity / VS Code) | Testado pelo autor no Windows 10 (`claude mcp add`) |
+| OpenAI Codex (CLI / Desktop) | Compatível e testado pelo autor no Windows 10 (`config.toml` → `[mcp_servers.chat-overdrive-bridge]`) |
+| DeepSeek Harness (DSH) | Compatível e testado pelo autor no Windows 10 (`@deepseek-ai/dsh-mcp-client` em `cordis.patch.yml`) |
+| Claude Desktop | Registro automático no instalador (`claude_desktop_config.json`) |
+| Outras IDEs e clientes MCP (`stdio`) (Cursor, Windsurf, Cline, Continue, Zed) | Compatíveis via configuração padrão (`command: "node"` + `args: [".../src/server.mjs"]`) |
 | Windows 10 | Testado pelo autor |
-| Windows 11 | Incluído nas instruções de instalação; não listado como testado pelo autor |
+| Windows 11 | Incluído nas instruções de instalação; compatível |
 | macOS e Linux | Instruções manuais disponíveis; ainda não testados pelo autor |
 
 > [!IMPORTANT]
@@ -174,7 +181,7 @@ flowchart TD
     end
 
     subgraph Remoto["Serviços de chat na internet"]
-        Chats["Perplexity · Gemini · ChatGPT<br/>Claude · DeepSeek"]
+        Chats["Perplexity · Gemini · ChatGPT<br/>Claude · DeepSeek · Copilot<br/>Meta AI · Groq · Grok"]
     end
 
     Chrome <-->|"Sua conta e suas cotas"| Chats
@@ -334,8 +341,8 @@ Ao relatar um problema, diga o sistema, a versão do Chrome, o assistente, o cha
 
 Versão atual: `0.1.0` — experimental.
 
-- Fluxo testado: Windows 10, Google Chrome, Antigravity e os cinco chats listados.
-- O registro no Claude Desktop e no Claude Code está preparado, mas ainda não foi testado pelo autor.
+- Fluxo testado: Windows 10, Google Chrome, Antigravity e os nove chats listados.
+- Testado no Windows 10 com Google Antigravity IDE, Claude Code, OpenAI Codex e DeepSeek Harness; Claude Desktop possui registro preparado.
 - As instruções para Mac e Linux estão escritas, mas ainda não foram testadas pelo autor.
 - Mudanças nos sites podem quebrar o funcionamento.
 - Disponibilidade, cotas e recursos dependem de cada conta e serviço.
@@ -357,7 +364,7 @@ Esta parte é para quem programa ou quer entender o projeto por dentro. Para usa
 
 &nbsp;
 
-`chat-overdrive-bridge` é um servidor local de Model Context Protocol (MCP), em Node.js, que fala por `stdio`. Ele conecta ao Chrome pelo Chrome DevTools Protocol (CDP) em `127.0.0.1:9222`, com Playwright Core. São 11 ferramentas:
+`chat-overdrive-bridge` é um servidor local de Model Context Protocol (MCP), em Node.js, que fala por `stdio`. Ele conecta ao Chrome pelo Chrome DevTools Protocol (CDP) em `127.0.0.1:9222`, com Playwright Core. São 15 ferramentas:
 
 | Ferramenta | Função |
 | :--- | :--- |
@@ -366,6 +373,10 @@ Esta parte é para quem programa ou quer entender o projeto por dentro. Para usa
 | `ask_chatgpt` | Envia uma solicitação ao ChatGPT web. |
 | `ask_claude` | Envia uma solicitação ao Claude web. |
 | `ask_deepseek` | Envia uma solicitação ao DeepSeek web. |
+| `ask_copilot` | Envia uma solicitação ao Microsoft Copilot web. |
+| `ask_meta` | Envia uma solicitação ao Meta AI web. |
+| `ask_groq` | Envia uma solicitação ao Groq web (Qwen 3.8 27B / fallback automático em 429). |
+| `ask_grok` | Envia uma solicitação ao Grok web (xAI, modos Fast/Build com citações). |
 | `compare_web_chats` | Consulta vários provedores em paralelo e retorna os resultados individuais. |
 | `ask_web_chat` | Consulta um provedor explicitamente pela interface genérica. |
 | `list_chat_sessions` | Consulta sessões ativas, abas ocupadas e reservas de uso. |
@@ -442,7 +453,7 @@ npm test
 
 O `npm test` usa páginas de exemplo. Ele não consulta chats reais e não comprova o funcionamento do layout atual dos sites.
 
-Requisitos para o registro manual: Node.js 20 ou superior e um cliente MCP capaz de iniciar um servidor `stdio`. Registro manual, comandos do Chrome no macOS e no Linux e opções do instalador: [guia de instalação](docs/INSTALL.pt-BR.md).
+Requisitos para o registro manual: Node.js 20 ou superior e um cliente MCP capaz de iniciar um servidor `stdio`. O servidor fala MCP `stdio` padrão (JSON-RPC 2.0), funcionando nativamente no Google Antigravity IDE, Claude Code (`claude mcp add`), OpenAI Codex (`config.toml` → `[mcp_servers.chat-overdrive-bridge]`), DeepSeek Harness (`@deepseek-ai/dsh-mcp-client` em `cordis.patch.yml`) e Claude Desktop. Registro manual, comandos do Chrome no macOS e no Linux e opções do instalador: [guia de instalação](docs/INSTALL.pt-BR.md).
 
 </details>
 
@@ -469,7 +480,7 @@ flowchart TD
     end
 
     subgraph Remote["Serviços externos de chat"]
-        Chats["Perplexity · Gemini · ChatGPT<br/>Claude · DeepSeek"]
+        Chats["Perplexity · Gemini · ChatGPT<br/>Claude · DeepSeek · Copilot<br/>Meta AI · Groq · Grok"]
     end
 
     Chrome <-->|"HTTPS · sua conta e suas cotas"| Chats
@@ -524,7 +535,7 @@ Distribuído sob a GNU General Public License v3.0 ou posterior (`GPL-3.0-or-lat
 - Autor e mantenedor: [Samuel Santos — @samucamg](https://github.com/samucamg).
 - Repositório oficial: [samucamg/chat-overdrive-bridge](https://github.com/samucamg/chat-overdrive-bridge).
 
-Projeto independente, sem afiliação, patrocínio ou endosso de Google, OpenAI, Anthropic, Perplexity ou DeepSeek. Nomes de produtos e marcas pertencem aos respectivos titulares.
+Projeto independente, sem afiliação, patrocínio ou endosso de Google, OpenAI, Anthropic, Perplexity, DeepSeek, Microsoft, Meta, Groq ou xAI (Grok). Nomes de produtos e marcas pertencem aos respectivos titulares.
 
 <p align="center">
   Desenvolvido para experimentação prática e para a comunidade open-source.<br>
@@ -552,7 +563,7 @@ Projeto independente, sem afiliação, patrocínio ou endosso de Google, OpenAI,
 
 ## ✨ What it is and what it is for
 
-Do you already have an account on Gemini, ChatGPT, Claude, Perplexity or DeepSeek? `chat-overdrive-bridge` lets your assistant (such as **Antigravity**) talk to those chats through your Chrome browser. The answer shows up in your assistant's own chat.
+Do you already have an account on Gemini, ChatGPT, Claude, Perplexity, DeepSeek, Copilot, Meta AI, Groq or Grok? `chat-overdrive-bridge` lets your assistant (such as **Antigravity**) talk to those chats through your Chrome browser. The answer shows up in your assistant's own chat.
 
 No copying and pasting between windows. No switching models in your assistant. No browser extension. No separate usage bill.
 
@@ -561,7 +572,7 @@ No copying and pasting between windows. No switching models in your assistant. N
 ### Why use it?
 
 - ⚡ **Use your chat plan's quota.** Advanced models such as Gemini run on the quota of your website account, with no API key bill.
-- 🆓 **Free chats count.** DeepSeek on the web is free and works like the others.
+- 🆓 **Free chats count.** DeepSeek, Groq (starting on Qwen 3.8 27B) and Grok (Fast and Build modes) on the web are free and work like the others.
 - 💻 **Plans such as ChatGPT Go work for programming too**, instead of depending only on your coding assistant's quota. Quota rules belong to each service and may change.
 - 🔌 **Stay in Antigravity.** No switching models or windows: just keep the test Chrome open with your chats signed in.
 - 🧭 **Get a second opinion.** Compare the answers of several chats with a single question.
@@ -587,8 +598,12 @@ No copying and pasting between windows. No switching models in your assistant. N
 | ChatGPT (including Go) | [chatgpt.com](https://chatgpt.com/) | “Ask ChatGPT…” |
 | Claude | [claude.ai](https://claude.ai/) | “Consult Claude web…” |
 | DeepSeek (free) | [chat.deepseek.com](https://chat.deepseek.com/) | “Ask DeepSeek…” |
+| Microsoft Copilot | [copilot.cloud.microsoft](https://copilot.cloud.microsoft/) | “Ask Copilot…” |
+| Meta AI | [meta.ai](https://meta.ai/) | “Ask Meta AI…” |
+| Groq | [chat.groq.com](https://chat.groq.com/?model=qwen/qwen3.8-27b) | “Ask Groq…” (starts on Qwen 3.8 27B avoiding default Arabic model; automatic model fallback on 429) |
+| Grok (xAI) | [grok.com](https://grok.com/) | “Ask Grok…” (operates in free Fast and Build modes, with web search and citations) |
 
-All five chats were tested by the author on Windows 10, with Chrome and Antigravity.
+All nine chats were tested by the author on Windows 10, with Chrome and Antigravity.
 
 On ChatGPT Go, Plus and other plans, models, features and quotas depend on your website account. The project does not grant extra model access.
 
@@ -596,11 +611,14 @@ On ChatGPT Go, Plus and other plans, models, features and quotas depend on your 
 
 | Item | Current status |
 | :--- | :--- |
-| Google Antigravity | Tested by the author on Windows 10 |
-| Claude Desktop | Registration prepared; not yet tested by the author |
-| Claude Code | Registration prepared; not yet tested by the author |
+| Google Antigravity IDE | Tested by the author on Windows 10 (also supports execution with Claude Code extension/agent inside Antigravity IDE) |
+| Claude Code (CLI and IDE extension in Antigravity / VS Code) | Tested by the author on Windows 10 (`claude mcp add`) |
+| OpenAI Codex (CLI / Desktop) | Compatible and tested by the author on Windows 10 (`config.toml` → `[mcp_servers.chat-overdrive-bridge]`) |
+| DeepSeek Harness (DSH) | Compatible and tested by the author on Windows 10 (`@deepseek-ai/dsh-mcp-client` in `cordis.patch.yml`) |
+| Claude Desktop | Automatic registration in the installer (`claude_desktop_config.json`) |
+| Other IDEs and MCP clients (`stdio`) (Cursor, Windsurf, Cline, Continue, Zed) | Compatible via standard configuration (`command: "node"` + `args: [".../src/server.mjs"]`) |
 | Windows 10 | Tested by the author |
-| Windows 11 | Included in the installation instructions; not listed as author-tested |
+| Windows 11 | Included in the installation instructions; compatible |
 | macOS and Linux | Manual instructions available; not yet tested by the author |
 
 > [!IMPORTANT]
@@ -641,7 +659,7 @@ flowchart TD
     end
 
     subgraph Remote["Chat services on the internet"]
-        Chats["Perplexity · Gemini · ChatGPT<br/>Claude · DeepSeek"]
+        Chats["Perplexity · Gemini · ChatGPT<br/>Claude · DeepSeek · Copilot<br/>Meta AI · Groq · Grok"]
     end
 
     Chrome <-->|"Your account and your quotas"| Chats
@@ -801,8 +819,8 @@ When reporting a problem, say the system, the Chrome version, the assistant, the
 
 Current version: `0.1.0` — experimental.
 
-- Tested workflow: Windows 10, Google Chrome, Antigravity and the five listed chats.
-- Registration in Claude Desktop and Claude Code is prepared but not yet tested by the author.
+- Tested workflow: Windows 10, Google Chrome, Antigravity and the nine listed chats.
+- Tested on Windows 10 with Google Antigravity IDE, Claude Code, OpenAI Codex, and DeepSeek Harness; Claude Desktop has prepared registration.
 - Mac and Linux instructions are written but not yet tested by the author.
 - Website changes can break it.
 - Availability, quotas and features depend on each account and service.
@@ -824,7 +842,7 @@ This part is for people who program or want to understand the project from the i
 
 &nbsp;
 
-`chat-overdrive-bridge` is a local Model Context Protocol (MCP) server, in Node.js, that talks over `stdio`. It connects to Chrome through the Chrome DevTools Protocol (CDP) on `127.0.0.1:9222`, using Playwright Core. It offers 11 tools:
+`chat-overdrive-bridge` is a local Model Context Protocol (MCP) server, in Node.js, that talks over `stdio`. It connects to Chrome through the Chrome DevTools Protocol (CDP) on `127.0.0.1:9222`, using Playwright Core. It offers 15 tools:
 
 | Tool | Purpose |
 | :--- | :--- |
@@ -833,6 +851,10 @@ This part is for people who program or want to understand the project from the i
 | `ask_chatgpt` | Send a request to ChatGPT web. |
 | `ask_claude` | Send a request to Claude web. |
 | `ask_deepseek` | Send a request to DeepSeek web. |
+| `ask_copilot` | Send a request to Microsoft Copilot web. |
+| `ask_meta` | Send a request to Meta AI web. |
+| `ask_groq` | Send a request to Groq web (Qwen 3.8 27B / automatic 429 fallback). |
+| `ask_grok` | Send a request to Grok web (xAI, Fast/Build modes with citations). |
 | `compare_web_chats` | Query multiple providers in parallel and return their individual results. |
 | `ask_web_chat` | Query a provider explicitly through the generic interface. |
 | `list_chat_sessions` | Inspect active sessions, busy tabs and leases. |
@@ -909,7 +931,7 @@ npm test
 
 `npm test` uses sample pages. It does not contact real web chats and does not prove that a provider's current website layout works.
 
-Requirements for manual registration: Node.js 20 or later and an MCP client capable of starting a `stdio` server. Manual registration, Chrome launch commands on macOS/Linux and installer options: [installation guide](docs/INSTALL.en.md).
+Requirements for manual registration: Node.js 20 or later and an MCP client capable of starting a `stdio` server. The server speaks standard MCP `stdio` (JSON-RPC 2.0), working natively in Google Antigravity IDE, Claude Code (`claude mcp add`), OpenAI Codex (`config.toml` → `[mcp_servers.chat-overdrive-bridge]`), DeepSeek Harness (`@deepseek-ai/dsh-mcp-client` in `cordis.patch.yml`), and Claude Desktop. Manual registration, Chrome launch commands on macOS/Linux and installer options: [installation guide](docs/INSTALL.en.md).
 
 </details>
 
@@ -936,7 +958,7 @@ flowchart TD
     end
 
     subgraph Remote["External web-chat services"]
-        Chats["Perplexity · Gemini · ChatGPT<br/>Claude · DeepSeek"]
+        Chats["Perplexity · Gemini · ChatGPT<br/>Claude · DeepSeek · Copilot<br/>Meta AI · Groq · Grok"]
     end
 
     Chrome <-->|"HTTPS · your account and quotas"| Chats
@@ -991,7 +1013,7 @@ Licensed under GNU General Public License v3.0 or later (`GPL-3.0-or-later`). Se
 - Author and maintainer: [Samuel Santos — @samucamg](https://github.com/samucamg).
 - Official repository: [samucamg/chat-overdrive-bridge](https://github.com/samucamg/chat-overdrive-bridge).
 
-Independent project. It is not affiliated with, sponsored by or endorsed by Google, OpenAI, Anthropic, Perplexity or DeepSeek. Product names and trademarks belong to their respective owners.
+Independent project. It is not affiliated with, sponsored by or endorsed by Google, OpenAI, Anthropic, Perplexity, DeepSeek, Microsoft, Meta, Groq or xAI (Grok). Product names and trademarks belong to their respective owners.
 
 <p align="center">
   Built for practical experimentation and the open-source community.<br>

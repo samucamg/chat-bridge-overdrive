@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Groq Chat - Fixture</title>
+</head>
+<body>
+  <header>
+    <div class="model-selector-container">
+      <button class="model-dropdown-trigger" aria-label="Select model">
+        <span>qwen/qwen3.8-27b</span>
+        <svg class="lucide-chevrons-up-down" width="16" height="16" viewBox="0 0 24 24"></svg>
+      </button>
+      <div role="listbox" style="display:none;">
+        <div role="option" data-value="qwen/qwen3.8-27b" aria-selected="true">qwen/qwen3.8-27b</div>
+        <div role="option" data-value="openai/gpt-oss-120b" aria-selected="false">openai/gpt-oss-120b</div>
+        <div role="option" data-value="qwen/qwen3.6-27b" aria-selected="false">qwen/qwen3.6-27b</div>
+        <div role="option" data-value="openai/gpt-oss-20b" aria-selected="false">openai/gpt-oss-20b</div>
+      </div>
+    </div>
+    <button type="button">Clear chat</button>
+  </header>
+  <main>
+    <div class="chat-thread">
+      <div class="user-turn">
+        <p>Ola Groq</p>
+      </div>
+      <div class="assistant-turn">
+        <div class="font-inter pl-10px">
+          <p>Resposta final do Groq Chat com inferencia de ultrabaixa latencia.</p>
+          <table>
+            <thead>
+              <tr><th>Modelo</th><th>Velocidade</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>qwen3.8-27b</td><td>1200 tps</td></tr>
+            </tbody>
+          </table>
+          <pre><code class="language-json">{"status": "ok_groq", "engine": "lpu"}</code></pre>
+          <p>Para mais detalhes, consulte a <a href="https://groq.com/docs" target="_blank">Documentacao Groq</a>.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <form class="composer-form">
+      <textarea id="chat" placeholder="Try it"></textarea>
+      <button type="submit" aria-label="Submit message">
+        <svg><path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"></path></svg>
+      </button>
+    </form>
+    <div class="user-profile">
+      <button>samucamg@gmail.com</button>
+    </div>
+  </footer>
+</body>
+</html>

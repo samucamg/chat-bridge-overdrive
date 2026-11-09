@@ -1,7 +1,5 @@
 # Mapeamento de Seletores DOM e Contrato dos Drivers
 
-English version: [SELECTORS.en.md](SELECTORS.en.md)
-
 Documentacao tecnica de seletores em 3 niveis de resiliencia para os provedores suportados pelo `chat-overdrive-bridge` e mecanismos de deteccao de anomalias/desafios.
 
 ---
@@ -122,7 +120,92 @@ Provedor adaptado a partir do antigravity-bridge (seletores extraidos dos projet
 
 ---
 
-## 6. Deteccao de Anomalias e Desafios de Seguranca
+## 6. Microsoft Copilot (https://copilot.cloud.microsoft/ ou https://copilot.microsoft.com/)
+
+Provedor homologado para a interface corporativa e web do Microsoft Copilot baseada em componentes Fluent UI e editor Lexical.
+
+| Acao / Elemento | Nivel 1 (Semantico) | Nivel 2 (Aria / I18n) | Nivel 3 (Estrutural / Classes) | Grau de Confianca | Observacoes |
+|---|---|---|---|---|---|
+| Campo de entrada (`input`) | `#m365-chat-editor-target-element`, `span[data-lexical-editor="true"][role="textbox"]` | `[role="textbox"][aria-label*="mensagem"]`, `[role="textbox"][aria-label*="message"]`, `[role="textbox"][aria-label*="Pergunte"]` | `.fai-BebopLiteChatInput [contenteditable="true"]`, `.fai-BebopLiteChatInput span` | Alta | Editor Lexical montado em elemento span dentro de `.fai-BebopLiteChatInput`. Requer foco e digitacao sintetica via CDP. |
+| Botao Enviar (`sendBtn`) | `button.fai-BebopLiteChatInput__send`, `button[type="submit"].fai-SendButton` | `button[aria-label="Enviar"]`, `button[aria-label="Send"]`, `button[aria-label*="Enviar"]` | `.fai-BebopLiteChatInput button:has(svg.fai-SendButton__sendIcon)` | Alta | Habilitado quando ha conteudo digitado no editor Lexical. |
+| Botao Parar (`stopBtn`) | `button.fai-SendButton:not(.fai-BebopLiteChatInput__send)` | `button[aria-label="Parar de gerar"]`, `button[aria-label="Stop generating"]`, `button[aria-label*="Parar"]` | `button.fai-SendButton:has(svg rect)` | Media | Visivel durante a geracao da resposta. Desaparecimento sinaliza conclusao. |
+| Bloco de Resposta (`response`) | `[data-testid="copilot-message-div"] [data-testid="markdown-reply"]`, `[data-testid="copilot-message-div"]` | `div[role="region"][aria-label*="Copilot"]` | `.fai-CopilotMessage__content [data-testid="markdown-reply"]`, `.fai-CopilotMessage__content` | Alta | Conteudo Markdown renderizado no turno do Copilot. Em sessoes continuadas, seleciona o ultimo turno. |
+| Filtro de Sugestoes / Cabecalhos (`filter`) | `.fai-Suggestion`, `.fai-CopilotMessage__accessibleHeading` | `[aria-label*="suggestion"]`, `[aria-label*="sugestao"]` | `.fai-CopilotMessage__content > .fai-Suggestion`, `h6.fai-CopilotMessage__accessibleHeading` | Alta | Sugestoes de prompts e cabecalhos acessiveis ("Copilot said:") descartados da extracao limpa. |
+| Citacoes / Fontes (`citations`) | `[data-testid="markdown-reply"] a.fui-Link`, `[data-testid="copilot-message-div"] a.fui-Link` | `[data-testid="markdown-reply"] a[target="_blank"][href^="http"]` | `.fai-CopilotMessage__content a[href^="http"]` | Alta | Links de citacao e fontes externas estilizados com componentes Fluent UI (`fui-Link`). |
+| Nova Conversa (`newChatBtn`) | `a.fui-NavItem.spa-link[href*="/chat?es=Click"]`, `a.fui-NavItem[href*="/chat"]` | `a[aria-label="Novo chat"]`, `a[aria-label="New chat"]`, `button[aria-label*="Novo chat"]` | `nav a[href*="chat"]`, `.spa-link` | Alta | Limpa o contexto da conversa e inicia uma nova thread. |
+| Anexo de Arquivo (`fileInput`) | `input#upload-file-button[type="file"]` | `input[type="file"][multiple]` | `input[type="file"]` | Alta | Elemento input de upload de arquivos manipulado via CDP `page.setInputFiles`. |
+
+### Regras Criticas do Microsoft Copilot
+- **Editor Lexical em elemento span:** O editor utiliza a tag `span` (`#m365-chat-editor-target-element`) com `data-lexical-editor="true"`. O envio requer `.focus()` e `Input.insertText` ou `page.keyboard.type()`, evitando atribuicao direta a `.innerText`.
+- **Limpeza de Turnos e Sugestoes:** As mensagens do Copilot residem em `[data-testid="copilot-message-div"]`. Deve-se selecionar sempre o ultimo container da lista em conversas multi-turn e filtrar rigorosamente `.fai-Suggestion` e `.fai-CopilotMessage__accessibleHeading`.
+
+---
+
+## 7. Meta AI (https://www.meta.ai/)
+
+Provedor homologado para a interface web do Meta AI baseada em Lexical e Tailwind/Prose.
+
+| Acao / Elemento | Nivel 1 (Semantico) | Nivel 2 (Aria / I18n) | Nivel 3 (Estrutural / Classes) | Grau de Confianca | Observacoes |
+|---|---|---|---|---|---|
+| Campo de entrada (`input`) | `div[data-testid="composer-input"][data-lexical-editor="true"]`, `[data-testid="composer-input"]` | `div[role="textbox"][contenteditable="true"]`, `div[aria-label*="Ask Meta AI"]`, `div[aria-label*="Pergunte"]` | `form div[contenteditable="true"]`, `.composer [contenteditable="true"]` | Alta | Editor Lexical com `contenteditable="true"`. Exige foco no elemento e digitacao sintetica via CDP. |
+| Botao Enviar (`sendBtn`) | `button[data-testid="composer-send-button"]` | `button[aria-label="Enviar"]`, `button[aria-label="Send"]`, `button[aria-label*="Enviar"]` | `button:has(svg)` junto ao composer | Alta | Habilitado quando ha texto preenchido no compositor. |
+| Botao Parar (`stopBtn`) | `button[data-testid="composer-stop-button"]` | `button[aria-label="Parar"]`, `button[aria-label="Stop"]`, `button[aria-label*="Parar"]` | `button:has(svg rect)` junto ao composer | Media | Visivel durante a geracao da resposta. Desaparecimento sinaliza conclusao. |
+| Bloco de Resposta (`response`) | `div[data-testid="assistant-message"] .prose.ur-markdown`, `div[data-testid="assistant-message"]` | `div[role="region"][aria-label*="Assistant"]`, `div[role="region"][aria-label*="Meta AI"]` | `.ur-markdown.markdown-content`, `div.prose.ur-markdown` | Alta | Conteudo Markdown renderizado dentro de `assistant-message`. Em conversas continuadas, seleciona o ultimo bloco. |
+| Filtro de Raciocinio (`thoughtFilter`) | `div[data-testid="thinking-status"]`, `[data-testid="thinking-status"]` | `div[aria-label*="thinking"]`, `div[aria-label*="raciocinio"]` | `.thinking-status`, `div:has-text("Mostrar raciocinio")` | Media | Indicador de raciocinio intermediario do modelo; deve ser descartado na extracao final. |
+| Citacoes / Fontes (`citations`) | `a[data-testid="citation-pill"]`, `a[data-citation-urls]` | `div[data-testid="assistant-message"] a[target="_blank"][href^="http"]` | `.prose.ur-markdown a[href^="http"]` | Alta | Pilulas de citacao contendo URLs de fontes no atributo `data-citation-urls` ou no atributo `href`. |
+| Nova Conversa (`newChatBtn`) | `a[data-testid="new-chat-button"]`, `a[href="/?new=1"]` | `a[aria-label="Nova conversa"]`, `a[aria-label="New chat"]`, `button[aria-label*="Nova conversa"]` | `nav a[href="/"]`, `header a[href*="new"]` | Alta | Inicia um novo topico redirecionando com parametro `?new=1`. |
+| Verificacao de Autenticacao (`isLoggedIn`) | `button[data-testid="user-menu-button"]` | `button[aria-label*="Perfil"]`, `button[aria-label*="Profile"]`, `button[aria-label*="Menu"]` | `header button:has(img)` | Alta | Identifica usuario autenticado pela presenca do menu do usuario no header. |
+
+### Regras Criticas do Meta AI
+- **Extracao de Citacoes em data-citation-urls:** As referencias externas em `a[data-testid="citation-pill"]` podem armazenar a URL destino prioritariamente no atributo `data-citation-urls`. A extracao deve inspecionar tanto `data-citation-urls` quanto `href`.
+- **Filtro de Botoes em Blocos de Codigo:** Elementos `<pre class="ur-sm-code">` contem botoes inline (`<button>Copiar</button>`). O extrator de texto deve ignorar textos de elementos interativos para manter o bloco de codigo integro.
+
+---
+
+## 8. Groq Chat (https://chat.groq.com/?model=qwen/qwen3.8-27b)
+
+Provedor homologado para a interface web de inferencia em hardware LPU do Groq Chat.
+
+| Acao / Elemento | Nivel 1 (Semantico) | Nivel 2 (Aria / I18n) | Nivel 3 (Estrutural / Classes) | Grau de Confianca | Observacoes |
+|---|---|---|---|---|---|
+| Campo de entrada (`input`) | `textarea#chat`, `textarea[placeholder="Try it"]` | `textarea[role="textbox"]`, `textarea[placeholder*="Try it"]`, `textarea[placeholder*="pergunte"]` | `form textarea`, `textarea` | Alta | Elemento textarea nativo padrao. Suporta foco e insercao via CDP `Input.insertText` ou digitacao. |
+| Botao Enviar (`sendBtn`) | `button[type="submit"]:has(svg path[d*="M120-160v-240l320-80"])`, `button[type="submit"]` | `button[aria-label="Submit message"]`, `button[aria-label*="Submit"]`, `button[aria-label*="Enviar"]` | `form button:has(svg)` | Alta | Botao de submit dentro do formulario do compositor. |
+| Botao Limpar / Nova Conversa (`newChatBtn`) | `button:has-text("Clear chat")`, `button:has-text("Clear")` | `button[aria-label*="Clear chat"]`, `button[aria-label*="Limpar"]` | `header button` | Alta | Limpa a conversa atual no Groq Chat mantendo o modelo selecionado. |
+| Seletor de Modelo (`modelBadge` / `modelSelector`) | `button:has(svg.lucide-chevrons-up-down)`, `[role="option"][data-value]` | `button[aria-label*="Select model"]`, `button[aria-label*="model"]` | `header button:has(svg)` | Alta | Menu suspenso para alternancia de modelo via parametro de URL `?model=` ou clique na opcao desejada. |
+| Bloco de Resposta (`response`) | `div.font-inter.pl-10px`, `div[class*="font-inter"][class*="pl-10px"]` | `div[role="region"][aria-label*="Response"]`, `div.assistant-turn div.font-inter` | `.chat-thread .assistant-turn`, `div.font-inter` | Alta | Container da resposta renderizada do Groq. Contem paragrafos, tabelas (`<table>`), blocos de codigo (`pre code`) e links externos. |
+| Citacoes / Fontes (`citations`) | `div.font-inter.pl-10px a[target="_blank"][href^="http"]` | `div.font-inter a[target="_blank"]` | `a[href^="http"]` | Alta | Links externos referenciados na resposta. |
+| Verificacao de Autenticacao (`isLoggedIn`) | `footer button:has-text("@")`, `footer button` | `button[aria-label*="User profile"]`, `footer button` | `footer` | Alta | Presenca do botao de perfil do usuario com email no rodape indica sessao autenticada. |
+
+### Regras Criticas do Groq Chat
+- **Bloqueio do modelo arabe padrao:** O Groq Chat pode carregar por padrao o modelo `canopylabs/orpheus-arabic-saudi` em certas instancias ou quando a URL nao contem parametros. Este modelo deve ser estritamente bloqueado. A navegacao deve sempre forcar o parametro explicito de modelo recomendado: `https://chat.groq.com/?model=qwen/qwen3.8-27b`.
+- **Cadeia de Fallback em Erro 429 (Rate Limit):** Em caso de esgotamento de quota ou erro 429 retornado pela infraestrutura da Groq, o driver deve aplicar a seguinte sequencia deterministica de fallback:
+  `qwen/qwen3.8-27b` -> `openai/gpt-oss-120b` -> `qwen/qwen3.6-27b` -> `openai/gpt-oss-20b`.
+
+---
+
+## 9. Grok / xAI (https://grok.com/)
+
+Provedor homologado para a interface web de conversacao do Grok (xAI).
+
+| Acao / Elemento | Nivel 1 (Semantico) | Nivel 2 (Aria / I18n) | Nivel 3 (Estrutural / Classes) | Grau de Confianca | Observacoes |
+|---|---|---|---|---|---|
+| Campo de entrada (`input`) | `div.tiptap.ProseMirror[contenteditable="true"]`, `div.tiptap[role="textbox"]` | `div[role="textbox"][contenteditable="true"]`, `div[aria-label*="Grok"]`, `div[aria-label*="Ask"]` | `.tiptap`, `div[contenteditable="true"]` | Alta | Editor baseado em TipTap / ProseMirror com `contenteditable="true"`. Requer foco e digitacao sintetica via CDP. |
+| Botao Enviar (`sendBtn`) | `button[data-testid="chat-submit"][data-composer-action="send"]`, `button[data-testid="chat-submit"]` | `button[aria-label="Send"]`, `button[aria-label="Enviar"]`, `button[type="submit"]` | `footer button:has(svg)` | Alta | Habilitado quando ha texto preenchido no editor TipTap. |
+| Botao Parar (`stopBtn`) | `button[data-composer-action="stop"]`, `button[data-testid="chat-stop"]` | `button[aria-label="Stop"]`, `button[aria-label="Parar"]` | `button:has(svg rect)` | Media | Visivel durante a geracao da resposta. Desaparecimento sinaliza conclusao. |
+| Seletor de Modelo / Modo (`modelBadge` / `modelSelector`) | `button#model-select-trigger`, `button[id="model-select-trigger"]` | `button[aria-label*="Modelo: Fast"]`, `button[aria-label*="Modelo"]`, `button[aria-label*="Model"]` | `header button` | Alta | Gatilho de selecao de modo de inferencia gratuito (`Fast` ou `Build`). |
+| Nova Conversa (`newChatBtn`) | `button[aria-label="Novo bate-papo"]`, `button[aria-label="New chat"]` | `button[aria-label*="bate-papo"]`, `button[aria-label*="chat"]` | `header button:first-child`, `a[href="/"]` | Alta | Inicia nova sessao limpa de conversa no Grok. |
+| Anexo de Arquivo (`fileInput`) | `input[type="file"][name="files"]` | `input[type="file"][multiple]` | `input[type="file"]` | Alta | Input de arquivo nativo manipulado via CDP `page.setInputFiles`. |
+| Bloco de Resposta (`response`) | `div[data-testid="assistant-message"] .response-content-markdown`, `.response-content-markdown` | `div[role="article"] .response-content-markdown`, `div[data-testid="assistant-message"]` | `.message-bubble .response-content-markdown`, `.message-bubble` | Alta | Conteudo Markdown renderizado da resposta do Grok. |
+| Filtro de Raciocinio (`thoughtFilter`) | `div[data-testid="conversation-thought"]`, `[data-testid="conversation-thought"]` | `div[aria-label*="thought"]`, `div[aria-label*="pensou"]` | `.thought-container`, `div:has-text("Pensou por")` | Alta | Bloco de raciocinio intermediario isolado ("Pensou por X s"). Fica separado de `.response-content-markdown` e deve ser rigorosamente descartado da extracao final. |
+| Citacoes / Fontes (`citations`) | `.response-content-markdown a[href^="http"]` | `div[data-testid="assistant-message"] a[target="_blank"]` | `a[href^="http"]:not([href*="grok.com"])` | Alta | Links externos referenciados no Markdown da resposta. |
+
+### Regras Criticas do Grok / xAI
+- **Modos Gratuitos e Bloqueio de Modos Pagos:** Apenas os modos gratuitos `Fast` e `Build` sao homologados e permitidos. Os modos pagos (`Auto`, `Expert`, `Heavy`) sao estritamente bloqueados para prevenir cobrancas indevidas ou bloqueios de assinatura.
+- **Isolamento de Raciocinio vs Conteudo:** O elemento `div[data-testid="conversation-thought"]` reside fora de `div.response-content-markdown`. A extracao deve mirar diretamente em `div.response-content-markdown` para obter exclusivamente a resposta limpa sem o indicador de pensamento previo.
+
+---
+
+## 10. Deteccao de Anomalias e Desafios de Seguranca
 
 Quando qualquer um destes elementos for detectado, o driver deve interromper imediatamente a execucao e retornar erro estruturado, sem entrar em loops de retentativa cega.
 
@@ -142,7 +225,7 @@ A perda de sessao ou redirecionamento para tela de login e identificada por dois
 
 ---
 
-## 7. Ciclo de Vida de Espera de Conclusao (waitDone)
+## 11. Ciclo de Vida de Espera de Conclusao (waitDone)
 
 O metodo `waitDone` combina tres sinais complementares para determinar o encerramento da resposta sem depender de polling estatico longo:
 
@@ -152,7 +235,7 @@ O metodo `waitDone` combina tres sinais complementares para determinar o encerra
 
 ---
 
-## 8. Conexao CDP e Politica de Isolamento de Rede
+## 12. Conexao CDP e Politica de Isolamento de Rede
 
 ### Nota Tecnica de Conexao
 O endpoint de conexao CDP exige estritamente a notacao IPv4 loopback `http://127.0.0.1:9222` (rejeitando `0.0.0.0`, `[::1]` ou tuneis externos por politica de seguranca).
@@ -171,7 +254,11 @@ Seletores confirmados em contas reais com prompt ficticio (resposta curta e resp
 | Gemini | nivel 2 (`button[aria-label*="Parar"]`, rotulo "Parar resposta") | `model-response` | `model-response a[href^="http"]` sem `google.com/search` |
 | Claude | `button[data-testid="chat-input-stop"]` | `main .prose` / `div[data-is-streaming] .prose` | `.standard-markdown a[href^="http"]` sem links de suporte |
 | DeepSeek | `div[role="button"].ds-button--primary:has(svg rect)` | `.ds-markdown` (container, nao `ds-markdown-paragraph` nem `ds-markdown-cite`) | `.ds-markdown a` (nivel 1, Media) |
+| Microsoft Copilot | `button.fai-SendButton[aria-label*="Parar"]` | `[data-testid="copilot-message-div"] [data-testid="markdown-reply"]` | `[data-testid="markdown-reply"] a.fui-Link` (nivel 1, Alta) |
+| Meta AI | `button[data-testid="composer-stop-button"]` | `div[data-testid="assistant-message"] .prose.ur-markdown` | `a[data-testid="citation-pill"]` (via `data-citation-urls` / `href`, nivel 1, Alta) |
+| Groq | `button:has-text("Clear chat")` | `div.font-inter.pl-10px` | `div.font-inter.pl-10px a[target="_blank"]` (nivel 1, Alta) |
+| Grok | `button[data-composer-action="stop"]` / `button[data-testid="chat-stop"]` | `div[data-testid="assistant-message"] .response-content-markdown` | `.response-content-markdown a[href^="http"]` (nivel 1, Alta) |
 
-Armadilhas encontradas: (1) seletor de resposta que tambem casa com a bolha da pergunta do usuario (Perplexity); (2) seletor de resposta que casa com blocos internos e o "ultimo elemento" fica pequeno (DeepSeek); (3) link de aviso legal contado como fonte (Claude); (4) links de busca do Google contados como fonte (Gemini); (5) paginas que mutam o DOM sem parar (Perplexity), por isso a conclusao usa o texto estavel; (6) seletor de baixa confianca (nivel 3) que casa com qualquer botao de icone e clica no lugar errado (Gemini): por isso envio, nova conversa e botao parar usam so os niveis 1 e 2, e sem eles o envio usa a tecla Enter; (7) em conversa continuada o texto da resposta anterior ja esta na tela: o `waitDone` registra um baseline antes de enviar e so conclui com uma resposta nova.
+Armadilhas encontradas: (1) seletor de resposta que tambem casa com a bolha da pergunta do usuario (Perplexity); (2) seletor de resposta que casa com blocos internos e o "ultimo elemento" fica pequeno (DeepSeek); (3) link de aviso legal contado como fonte (Claude); (4) links de busca do Google contados como fonte (Gemini); (5) paginas que mutam o DOM sem parar (Perplexity), por isso a conclusao usa o texto estavel; (6) seletor de baixa confianca (nivel 3) que casa com qualquer botao de icone e clica no lugar errado (Gemini): por isso envio, nova conversa e botao parar usam so os niveis 1 e 2, e sem eles o envio usa a tecla Enter; (7) em conversa continuada o texto da resposta anterior ja esta na tela: o `waitDone` registra um baseline antes de enviar e so conclui com uma resposta nova; (8) Copilot: o editor e um elemento `span` (`#m365-chat-editor-target-element`), exigindo foco explicito e descartando cabecalho `.fai-CopilotMessage__accessibleHeading` e sugestoes `.fai-Suggestion`; (9) Meta AI: links de fontes podem vir encapsulados no atributo `data-citation-urls` da pilula de citacao alem de `href`, e blocos de codigo contem botoes de copia inline que precisam ser filtrados; (10) Groq: o modelo padrao pode vir como canopylabs/orpheus-arabic-saudi se a URL nao especificar o modelo, exigindo forcar ?model=qwen/qwen3.8-27b e cadeia de fallback em erro 429; (11) Grok: modos pagos (Auto/Expert/Heavy) devem ser bloqueados restringindo-se aos modos gratuitos Fast e Build, e o bloco conversation-thought deve ser isolado de response-content-markdown.
 
 `cancel_chat` validado em geracao real (Gemini e Perplexity): a chamada pendente retorna `CANCELLED`, o botao parar e acionado e o lease da aba e liberado.

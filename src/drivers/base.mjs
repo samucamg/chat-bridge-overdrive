@@ -469,6 +469,7 @@ export class BaseDriver {
 
         let currentText = '';
         let count = 0;
+        let streamingDone = false;
         if (respSel) {
           try {
             const elements = document.querySelectorAll(respSel);
@@ -476,18 +477,29 @@ export class BaseDriver {
             if (elements.length > 0) {
               const lastEl = elements[elements.length - 1];
               currentText = (lastEl.textContent || '').trim();
+              const streamContainer = typeof lastEl.closest === 'function'
+                ? (lastEl.closest('[data-streaming-state]') || lastEl)
+                : lastEl;
+              const streamState = streamContainer.getAttribute ? streamContainer.getAttribute('data-streaming-state') : null;
+              const streamComplete = streamContainer.getAttribute ? streamContainer.getAttribute('data-streaming-complete') : null;
+              if (streamState === 'DONE' || streamComplete === 'true') {
+                streamingDone = true;
+              } else if (streamState && streamState !== 'DONE' && streamState !== 'STOPPED') {
+                isStopVisible = true;
+              }
             }
           } catch (e) {}
         }
 
         const lastMutation = window.__bridgeLastMutation || 0;
 
-        return { isStopVisible, currentText, count, lastMutation };
+        return { isStopVisible, currentText, count, lastMutation, streamingDone };
       }, { stopSel: stopSelector, respSel: responseSelector }).catch(() => ({
         isStopVisible: false,
         currentText: '',
         count: 0,
-        lastMutation: 0
+        lastMutation: 0,
+        streamingDone: false
       }));
 
       if (state.isStopVisible) {
@@ -537,7 +549,7 @@ export class BaseDriver {
       // com ruido no DOM; caso contrario exige texto e DOM quietos pelo debounce.
       const textStable = stableByText >= debounceMs;
       const domStable = stableByMutation >= debounceMs;
-      const isStable = textStable && (domStable || stableByText >= debounceMs * 5);
+      const isStable = state.streamingDone || (textStable && (domStable || stableByText >= debounceMs * 5));
 
       if (hasStarted && !state.isStopVisible && state.currentText.length > 0 && isStable) {
         return true;
@@ -705,7 +717,15 @@ export class BaseDriver {
         if (out.length >= maxImages) break;
         index += 1;
         const item = { index, alt: (img.getAttribute('alt') || '').slice(0, 200), mimeType: '', bytes: 0 };
-        const src = img.currentSrc || img.src;
+        let src = img.currentSrc || img.src || (typeof img.getAttribute === 'function' ? img.getAttribute('src') : null);
+        if (!src) {
+          try {
+            const reactKey = Object.keys(img).find((k) => k.startsWith('__reactProps$'));
+            if (reactKey && img[reactKey]?.src) {
+              src = img[reactKey].src;
+            }
+          } catch (e) {}
+        }
         if (!src) {
           item.skipped = 'FETCH_FAILED';
           out.push(item);

@@ -320,7 +320,7 @@ test('getSelectorString - maxLevel limita aos niveis de maior confianca', () => 
 });
 
 test('send - nenhum driver clica por seletor de nivel 3 (Baixa) do botao de envio', async () => {
-  for (const name of ['gemini', 'perplexity', 'chatgpt', 'claude', 'deepseek']) {
+  for (const name of ['gemini', 'perplexity', 'chatgpt', 'claude', 'deepseek', 'copilot', 'meta', 'groq', 'grok']) {
     const d = DRIVERS[name];
     const level3 = d.selectors.sendBtn.level3?.selector;
     if (!level3) continue;

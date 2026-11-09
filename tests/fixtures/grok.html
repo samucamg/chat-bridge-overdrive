@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Grok - Fixture</title>
+</head>
+<body>
+  <header>
+    <button aria-label="Novo bate-papo">Novo bate-papo</button>
+    <button id="model-select-trigger" aria-label="Modelo: Fast">Fast</button>
+  </header>
+  <main>
+    <div data-testid="assistant-message" class="message-bubble" role="article">
+      <div data-testid="conversation-thought">Pensou por 2 s</div>
+      <div class="response-content-markdown">
+        <p>Resposta Grok Fast</p>
+        <table>
+          <thead>
+            <tr><th>Nome</th><th>Clima</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Zephyria</td><td>Tempestuoso</td></tr>
+          </tbody>
+        </table>
+        <pre><code>{"status": "ok_grok", "code": 77}</code></pre>
+        <a href="https://x.ai/grok">Fonte xAI</a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <input type="file" name="files" multiple style="display:none;" />
+    <div class="tiptap ProseMirror" contenteditable="true" role="textbox"></div>
+    <button data-testid="chat-submit" data-composer-action="send" type="submit">Send</button>
+  </footer>
+</body>
+</html>

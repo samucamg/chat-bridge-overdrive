@@ -3,18 +3,40 @@
   "version": "0.1.0",
   "private": true,
   "license": "GPL-3.0-or-later",
-  "repository": { "type": "git", "url": "git+https://github.com/samucamg/chat-overdrive-bridge.git" },
-  "engines": { "node": ">=20" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samucamg/chat-overdrive-bridge.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "homepage": "https://github.com/samucamg/chat-overdrive-bridge#readme",
-  "bugs": { "url": "https://github.com/samucamg/chat-overdrive-bridge/issues" },
-  "keywords": ["mcp", "model-context-protocol", "chrome-devtools-protocol", "cdp", "playwright", "perplexity", "gemini", "chatgpt", "claude", "deepseek"],
+  "bugs": {
+    "url": "https://github.com/samucamg/chat-overdrive-bridge/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "chrome-devtools-protocol",
+    "cdp",
+    "playwright",
+    "perplexity",
+    "gemini",
+    "chatgpt",
+    "claude",
+    "deepseek",
+    "copilot",
+    "meta",
+    "groq",
+    "grok"
+  ],
   "type": "module",
-  "description": "Servidor MCP stdio para consulta segura a chats web autenticados via Chrome CDP local (127.0.0.1:9222)",
+  "description": "Servidor MCP stdio para consulta segura a 9 chats web autenticados via Chrome CDP local (127.0.0.1:9222)",
   "main": "src/server.mjs",
   "scripts": {
     "start": "node src/server.mjs",
     "test": "node tests/run-all.mjs",
-    "check": "node --check src/errors.mjs && node --check src/sanitizer.mjs && node --check src/logger.mjs && node --check src/queue.mjs && node --check src/cdp.mjs && node --check src/drivers/base.mjs && node --check src/drivers/perplexity.mjs && node --check src/drivers/gemini.mjs && node --check src/drivers/chatgpt.mjs && node --check src/drivers/claude.mjs && node --check src/drivers/deepseek.mjs && node --check src/doctor.mjs && node --check src/sessions.mjs && node --check src/live_runner.mjs && node --check src/server.mjs"
+    "check": "node --check src/errors.mjs && node --check src/sanitizer.mjs && node --check src/logger.mjs && node --check src/queue.mjs && node --check src/cdp.mjs && node --check src/drivers/base.mjs && node --check src/drivers/perplexity.mjs && node --check src/drivers/gemini.mjs && node --check src/drivers/chatgpt.mjs && node --check src/drivers/claude.mjs && node --check src/drivers/deepseek.mjs && node --check src/drivers/copilot.mjs && node --check src/drivers/meta.mjs && node --check src/drivers/groq.mjs && node --check src/drivers/grok.mjs && node --check src/doctor.mjs && node --check src/sessions.mjs && node --check src/live_runner.mjs && node --check src/server.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

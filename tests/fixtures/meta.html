@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Meta AI - Fixture</title>
+</head>
+<body>
+  <header>
+    <button data-testid="user-menu-button">Menu</button>
+    <a data-testid="new-chat-button" href="/?new=1" aria-label="Nova conversa">Nova conversa</a>
+  </header>
+  <main>
+    <div data-testid="assistant-message">
+      <div data-testid="thinking-status">Mostrar raciocinio</div>
+      <div class="prose ur-markdown markdown-content">
+        <p>Resposta final do Meta AI sobre HTTP/3.</p>
+        <pre class="ur-sm-code"><code>const http = require('http');</code><button>Copiar</button></pre>
+        <a data-testid="citation-pill" data-citation-urls="https://datatracker.ietf.org/doc/html/rfc9114" title="rfc9114">1</a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div data-testid="composer-input" data-lexical-editor="true" contenteditable="true" role="textbox"></div>
+    <button data-testid="composer-send-button" aria-label="Enviar"><svg></svg></button>
+    <button data-testid="composer-stop-button" aria-label="Parar" style="display: none;"><svg><rect></rect></svg></button>
+  </footer>
+</body>
+</html>

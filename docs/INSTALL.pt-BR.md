@@ -6,7 +6,7 @@ English version: [INSTALL.en.md](INSTALL.en.md) | Voltar ao [README](../README.m
 
 - Node.js 20 ou superior (`node -v`)
 - Google Chrome instalado
-- Um cliente MCP que consiga iniciar um servidor stdio (por exemplo Claude Desktop, Claude Code ou qualquer cliente que aceite `command` e `args`)
+- Um cliente MCP que consiga iniciar um servidor stdio (por exemplo Antigravity IDE, Claude Code, OpenAI Codex, DeepSeek Harness/DSH, Claude Desktop, Cursor, Windsurf)
 - Contas já logadas nos chats que você quer usar
 
 ## 2. Instalar
@@ -55,15 +55,28 @@ google-chrome --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 
   --user-data-dir="$HOME/.chrome-overdrive-bridge-profile"
 ```
 
-Nessa janela do Chrome, abra cada chat e faça login uma vez (perplexity.ai, gemini.google.com, chatgpt.com, claude.ai, chat.deepseek.com). A sessão fica guardada no perfil isolado.
+Nessa janela do Chrome, abra cada chat e faça login uma vez nos provedores desejados:
+- Perplexity (`https://www.perplexity.ai`)
+- Gemini (`https://gemini.google.com`)
+- ChatGPT (`https://chatgpt.com`)
+- Claude (`https://claude.ai`)
+- DeepSeek (`https://chat.deepseek.com`)
+- Copilot (`https://copilot.cloud.microsoft`)
+- Meta AI (`https://www.meta.ai`)
+- Groq (`https://chat.groq.com/?model=qwen/qwen3.8-27b` — utilize esta URL com o modelo `qwen/qwen3.8-27b` para evitar o modelo padrão em árabe e garantir a rotação automática)
+- Grok (`https://grok.com/` — operando nos modos gratuitos `Fast` e `Build`)
+
+A sessão fica guardada no perfil isolado.
 
 Confirme que o CDP está no ar: abra `http://127.0.0.1:9222/json/version` no navegador. Deve aparecer um JSON.
 
 ## 4. Registrar o servidor no cliente MCP
 
-Se você usou o instalador automático (seção 2a), ele já fez isso nos clientes que você escolheu. Antigravity: à mão, adicione o trecho abaixo ao `mcp_config.json` dele (normalmente `C:\Users\<você>\.gemini\config\mcp_config.json`).
+Se você usou o instalador automático (seção 2a), ele já fez isso nos clientes que você escolheu. Use o caminho absoluto do arquivo `src/server.mjs` que você clonou.
 
-Use o caminho absoluto do arquivo `src/server.mjs` que você clonou.
+### Antigravity IDE (e Claude Code rodando dentro da Antigravity IDE)
+
+Adicione o bloco abaixo ao arquivo `mcp_config.json` (normalmente em `C:\Users\<você>\.gemini\config\mcp_config.json` ou `%USERPROFILE%\.gemini\antigravity\mcp_config.json`):
 
 ```json
 {
@@ -76,13 +89,55 @@ Use o caminho absoluto do arquivo `src/server.mjs` que você clonou.
 }
 ```
 
-No Claude Code, você pode rodar:
+### Claude Code (CLI / IDE)
 
-```
-claude mcp add chat-overdrive-bridge -- node /caminho/para/chat-overdrive-bridge/src/server.mjs
+Execute no terminal:
+
+```bash
+claude mcp add --scope user chat-overdrive-bridge -- node C:/caminho/para/chat-overdrive-bridge/src/server.mjs
 ```
 
-Reinicie o cliente. Ele deve listar 11 ferramentas: `ask_perplexity`, `ask_gemini`, `ask_chatgpt`, `ask_claude`, `ask_deepseek`, `compare_web_chats`, `ask_web_chat`, `list_chat_sessions`, `cancel_chat`, `chat_bridge_status`, `preview_payload`.
+### OpenAI Codex (`~/.codex/config.toml`)
+
+Adicione o bloco `[mcp_servers.chat-overdrive-bridge]` no arquivo `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.chat-overdrive-bridge]
+command = "node"
+args = ["C:/caminho/para/chat-overdrive-bridge/src/server.mjs"]
+```
+
+### DeepSeek Harness — DSH (`~/.dsh/profiles/web/cordis.patch.yml`)
+
+Configure o plugin `@deepseek-ai/dsh-mcp-client` no arquivo de perfil:
+
+```yaml
+plugins:
+  - name: "@deepseek-ai/dsh-mcp-client"
+    config:
+      serverName: bridge
+      transport: stdio
+      command: node
+      args:
+        - "C:/caminho/para/chat-overdrive-bridge/src/server.mjs"
+```
+
+### Claude Desktop / Cursor / Windsurf / outros clientes MCP stdio
+
+Adicione o bloco padrão `mcpServers` no arquivo de configuração do seu cliente (por exemplo `claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "chat-overdrive-bridge": {
+      "command": "node",
+      "args": ["C:/caminho/para/chat-overdrive-bridge/src/server.mjs"]
+    }
+  }
+}
+```
+
+Reinicie o cliente. Ele deve listar 15 ferramentas: `ask_perplexity`, `ask_gemini`, `ask_chatgpt`, `ask_claude`, `ask_deepseek`, `ask_copilot`, `ask_meta`, `ask_groq`, `ask_grok`, `compare_web_chats`, `ask_web_chat`, `list_chat_sessions`, `cancel_chat`, `chat_bridge_status`, `preview_payload`.
 
 ## 5. Primeiro uso
 
